@@ -12,7 +12,11 @@ GLFWwindow *window;
 * Customizable functions *
 **************************/
 
+int t;
+float theta,phi;
 Ball ball1;
+Ball ball2;
+int stop;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -30,9 +34,12 @@ void draw() {
     glUseProgram (programID);
 
     // Eye - Location of camera. Don't change unless you are sure!!
-    glm::vec3 eye ( 5*cos(camera_rotation_angle*M_PI/180.0f), 0, 5*sin(camera_rotation_angle*M_PI/180.0f) );
+   
+    //glm::vec3 eye ( 5*cos(camera_rotation_angle*M_PI/180.0f), 0, 5*sin(camera_rotation_angle*M_PI/180.0f) );
+    glm::vec3 eye ( 3*sin(theta)*cos(phi),3*sin(theta)*sin(phi),3*cos(theta)*t );
+    //glm::vec3 eye ( 0,0,0 );
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (0, 0, 0);
+    glm::vec3 target (3, 0, 0);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (0, 1, 0);
 
@@ -52,19 +59,59 @@ void draw() {
 
     // Scene render
     ball1.draw(VP);
+    ball2.draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
     int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
+    int up  = glfwGetKey(window, GLFW_KEY_UP);
+    int down = glfwGetKey(window, GLFW_KEY_DOWN);
+    int f = glfwGetKey(window, GLFW_KEY_F);
+
+    if (f){ // first person 
+        t=0;
+        theta =0;
+        phi = 0;
+    }
+
+    //all remaining are at an angle above the 2 sqaures 
     if (left) {
-        // Do something
+        t=1;
+        phi += 0.05;
+    }
+    else if(right){
+        //cout<<"right";
+        t=1;
+        phi -= 0.05;
+    }
+    else if(up){
+        t=1;
+        theta += 0.05;
+    }
+    else if(down){
+        t=1;
+        theta -= 0.05;
     }
 }
 
 void tick_elements() {
-    ball1.tick();
-    camera_rotation_angle += 1;
+    //cout<<"tick";
+    //ball1.tick(stop*(-1));
+    //ball2.tick(stop*1);
+   /* bounding_box_t b1,b2;
+    b1.x = ball1.position.x;
+    b2.x = ball2.position.x;
+    b1.y = ball1.position.y;
+    b2.y = ball2.position.y;
+    b1.width = b2.width = 0.5;
+    b1.height = b2.height = 0.5;
+    if (detect_collision(b1,b2))
+    {
+        //stop = 0; // to stop when once collided 
+         stop = -1; // to return in the opposite directions 
+    }*/
+    // camera_rotation_angle += 1;
 }
 
 /* Initialize the OpenGL rendering properties */
@@ -73,7 +120,10 @@ void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
 
-    ball1       = Ball(0, 0, COLOR_RED);
+    ball1       = Ball(-0.5f, 0, COLOR_RED);
+    ball2       = Ball(3, 0, COLOR_GREEN);
+
+
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
@@ -98,6 +148,9 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    theta = phi = 0;
+    t=1;
+    stop = 1;
     srand(time(0));
     int width  = 600;
     int height = 600;
