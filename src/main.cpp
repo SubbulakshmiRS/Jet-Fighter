@@ -1,6 +1,8 @@
 #include "main.h"
 #include "timer.h"
 #include "ball.h"
+#include "plane.h"
+#include "background.h"
 
 using namespace std;
 
@@ -11,21 +13,78 @@ GLFWwindow *window;
 /**************************
 * Customizable functions *
 **************************/
-
+double cur_x_pos,cur_y_pos;
+int type;
+double add_x,add_y,add_z;
 int t;
 float theta,phi;
 Ball ball1;
 Ball ball2;
 int stop;
+Plane plane;
+Background background;
+
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 
 Timer t60(1.0 / 60);
 
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if(cur_x_pos == -1 && cur_y_pos == -1)
+    {
+    cur_x_pos = xpos;
+    cur_y_pos = ypos;
+    return;
+    }
+
+    if(type == 4)
+    {
+        cout<<"here";
+        if(xpos > cur_x_pos)
+        {
+            cout<<"right\n";
+            add_x += 0.2f;
+        }
+        
+        if(xpos < cur_x_pos)
+        {
+            cout<<"left\n";
+            add_x -= 0.2f;
+        }
+        
+        if(ypos < cur_y_pos)
+        {
+            cout<<"up\n";
+            add_y += 0.2f;
+        }
+
+        if(ypos > cur_y_pos)
+        {
+            cout<<"down\n";
+            add_y -= 0.2f;
+        }
+
+    }
+
+
+    cur_x_pos = xpos;
+    cur_y_pos = ypos;
+    //cout<<xpos<<" : "<<ypos<<"\n";
+
+}  
+
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
 void draw() {
+    int views[5][3][3] = {
+        {{0,0,7},{0,0,10},{0,1,0}}, // plane view
+        {{0,5,5.5f},{0,-10,5.5f},{0,0,1}}, // top view 
+        {{0,5,0},{0,0,5.5f},{0,1,0}}, // follow cam view 
+        {{10,10,-10},{0,0,5.5f},{0,0,1}}, // tower view 
+        {{0,5,0},{0,0,5.5f},{0,1,0}} // helicopter view starting 
+    };
     // clear the color and depth in the frame buffer
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -36,12 +95,12 @@ void draw() {
     // Eye - Location of camera. Don't change unless you are sure!!
    
     //glm::vec3 eye ( 5*cos(camera_rotation_angle*M_PI/180.0f), 0, 5*sin(camera_rotation_angle*M_PI/180.0f) );
-    glm::vec3 eye ( 3*sin(theta)*cos(phi),3*sin(theta)*sin(phi),3*cos(theta)*t );
-    //glm::vec3 eye ( 0,0,0 );
+    //glm::vec3 eye ( 3*sin(theta)*cos(phi),3*sin(theta)*sin(phi),3*cos(theta)*t );
+    glm::vec3 eye ( views[type][0][0]+add_x,views[type][0][1]+add_y,views[type][0][2]+add_z);
     // Target - Where is the camera looking at.  Don't change unless you are sure!!
-    glm::vec3 target (3, 0, 0);
+    glm::vec3 target ( views[type][1][0],views[type][1][1],views[type][1][2]);
     // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
-    glm::vec3 up (0, 1, 0);
+    glm::vec3 up (views[type][2][0],views[type][2][1],views[type][2][2]);
 
     // Compute Camera matrix (view)
     Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
@@ -58,18 +117,47 @@ void draw() {
     glm::mat4 MVP;  // MVP = Projection * View * Model
 
     // Scene render
-    ball1.draw(VP);
-    ball2.draw(VP);
+    /*ball1.draw(VP);
+    ball2.draw(VP);*/
+    plane.draw(VP);
+    background.draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
-    int left  = glfwGetKey(window, GLFW_KEY_LEFT);
+    int one = glfwGetKey(window, GLFW_KEY_1) , two = glfwGetKey(window, GLFW_KEY_2),three = glfwGetKey(window, GLFW_KEY_3);
+    int four = glfwGetKey(window, GLFW_KEY_4),five = glfwGetKey(window, GLFW_KEY_5); 
+    int space = glfwGetKey(window, GLFW_KEY_SPACE);
+    int w = glfwGetKey(window, GLFW_KEY_W);
+    int a = glfwGetKey(window, GLFW_KEY_A);
+    int d = glfwGetKey(window, GLFW_KEY_D);
+    int f = glfwGetKey(window, GLFW_KEY_F) , e = glfwGetKey(window, GLFW_KEY_E);
+
+    /*int left  = glfwGetKey(window, GLFW_KEY_LEFT);
     int right = glfwGetKey(window, GLFW_KEY_RIGHT);
     int up  = glfwGetKey(window, GLFW_KEY_UP);
     int down = glfwGetKey(window, GLFW_KEY_DOWN);
-    int f = glfwGetKey(window, GLFW_KEY_F);
+    int f = glfwGetKey(window, GLFW_KEY_F);*/
 
-    if (f){ // first person 
+    if(one){ type = 0; add_x = add_y = add_z = 0;}
+    else if (two) { type = 1;add_x = add_y = add_z = 0;}
+    else if(three) {type = 2;add_x = add_y = add_z = 0;}
+    else if(four) { type = 3;add_x = add_y = add_z = 0;}
+    else if(five) { type = 4;}
+
+    if(space)
+        plane.speed_y += 0.001f;
+    else if(w)
+        plane.speed_x += 0.001f;
+    else if(a)
+        plane.tilt_left();
+    else if(d)
+        plane.tilt_right();
+    else if(f)
+        plane.rotate_cc(); 
+    else if(e)
+        plane.rotate_c();
+
+    /*if (f){ // first person 
         t=0;
         theta =0;
         phi = 0;
@@ -92,10 +180,11 @@ void tick_input(GLFWwindow *window) {
     else if(down){
         t=1;
         theta -= 0.05;
-    }
+    }*/
 }
 
 void tick_elements() {
+    plane.tick();
     //cout<<"tick";
     //ball1.tick(stop*(-1));
     //ball2.tick(stop*1);
@@ -120,8 +209,11 @@ void initGL(GLFWwindow *window, int width, int height) {
     /* Objects should be created before any other gl function and shaders */
     // Create the models
 
-    ball1       = Ball(-0.5f, 0, COLOR_RED);
-    ball2       = Ball(3, 0, COLOR_GREEN);
+    ball1       = Ball(-0.5f, 0,0,0.5f, COLOR_RED);
+    ball2       = Ball(3, 0, 0,0.5f,COLOR_GREEN);
+    plane = Plane(0,0,0);
+    background = Background(1);
+    
 
 
 
@@ -148,6 +240,9 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    cur_x_pos = cur_y_pos = -1;
+    add_x = add_y = add_z = 0;
+    type = 0;
     theta = phi = 0;
     t=1;
     stop = 1;
@@ -156,6 +251,7 @@ int main(int argc, char **argv) {
     int height = 600;
 
     window = initGLFW(width, height);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     initGL (window, width, height);
 

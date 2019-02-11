@@ -1,22 +1,23 @@
 #include "main.h"
+#include "ball.h"
 
-#ifndef BALL_H
-#define BALL_H
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
 
-class Ball {
+class Background {
 public:
-    Ball() {}
-    Ball(float x, float y, float z,float size ,color_t color);
+    Background() {}
+    Background(int scene);
     glm::vec3 position;
+    Ball part;
     float rotation;
-    float size;
     void draw(glm::mat4 VP);
     void set_position(float x, float y,float z);
     void tick(int type);
-    double speed;
+    int move(float x , float y,float z);
 private:
     VAO *object;
 };
 
-#endif // BALL_H
+#endif // BACKGROUND_H
