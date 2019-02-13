@@ -3,10 +3,12 @@
 #include "ball.h"
 #include "plane.h"
 #include "background.h"
+#include "dashboard.h"
+#include "figure.h"
 
 using namespace std;
 
-GLMatrices Matrices;
+GLMatrices Matrices,dummy;
 GLuint     programID;
 GLFWwindow *window;
 
@@ -23,7 +25,8 @@ Ball ball2;
 int stop;
 Plane plane;
 Background background;
-
+Dashboard dashboard;
+Semi sm;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -41,7 +44,6 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 
     if(type == 4)
     {
-        cout<<"here";
         if(xpos > cur_x_pos)
         {
             cout<<"right\n";
@@ -78,12 +80,13 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
 void draw() {
-    int views[5][3][3] = {
+    int views[6][3][3] = {
         {{0,0,7},{0,0,10},{0,1,0}}, // plane view
         {{0,5,5.5f},{0,-10,5.5f},{0,0,1}}, // top view 
         {{0,5,0},{0,0,5.5f},{0,1,0}}, // follow cam view 
         {{10,10,-10},{0,0,5.5f},{0,0,1}}, // tower view 
-        {{0,5,0},{0,0,5.5f},{0,1,0}} // helicopter view starting 
+        {{0,5,0},{0,0,5.5f},{0,1,0}} ,// helicopter view starting 
+        {{0,0,5},{0,0,0},{0,1,0}}
     };
     // clear the color and depth in the frame buffer
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -104,8 +107,13 @@ void draw() {
 
     // Compute Camera matrix (view)
     Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
+        glm::vec3 eye_dummy ( 0,0,5 );
+        glm::vec3 target_dummy (0, 0, 0);
+        glm::vec3 up_dummy (0, 1, 0);
+        dummy.view = glm::lookAt(eye_dummy,target_dummy,up_dummy);
+        glm::mat4 VP_dummy = Matrices.projection*dummy.view;
     // Don't change unless you are sure!!
-    // Matrices.view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); // Fixed camera for 2D (ortho) in XY plane
+    // Matrices.view = glm::lookAt(glm::vec3(0, 0, -3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); // Fixed camera for 2D (ortho) in XY plane
 
     // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
     // Don't change unless you are sure!!
@@ -121,11 +129,13 @@ void draw() {
     ball2.draw(VP);*/
     plane.draw(VP);
     background.draw(VP);
+    //sm.draw(VP_dummy);
+    dashboard.draw(VP_dummy); // dashboard not viewable 
 }
 
 void tick_input(GLFWwindow *window) {
     int one = glfwGetKey(window, GLFW_KEY_1) , two = glfwGetKey(window, GLFW_KEY_2),three = glfwGetKey(window, GLFW_KEY_3);
-    int four = glfwGetKey(window, GLFW_KEY_4),five = glfwGetKey(window, GLFW_KEY_5); 
+    int four = glfwGetKey(window, GLFW_KEY_4),five = glfwGetKey(window, GLFW_KEY_5),six = glfwGetKey(window, GLFW_KEY_6); 
     int space = glfwGetKey(window, GLFW_KEY_SPACE);
     int w = glfwGetKey(window, GLFW_KEY_W);
     int a = glfwGetKey(window, GLFW_KEY_A);
@@ -143,6 +153,7 @@ void tick_input(GLFWwindow *window) {
     else if(three) {type = 2;add_x = add_y = add_z = 0;}
     else if(four) { type = 3;add_x = add_y = add_z = 0;}
     else if(five) { type = 4;}
+    else if(six) { type = 5;add_x = add_y = add_z = 0;}
 
     if(space)
         plane.speed_y += 0.001f;
@@ -213,9 +224,8 @@ void initGL(GLFWwindow *window, int width, int height) {
     ball2       = Ball(3, 0, 0,0.5f,COLOR_GREEN);
     plane = Plane(0,0,0);
     background = Background(1);
-    
-
-
+    dashboard = Dashboard(1);
+    sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
