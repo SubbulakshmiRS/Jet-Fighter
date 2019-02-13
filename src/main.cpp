@@ -195,7 +195,10 @@ void tick_input(GLFWwindow *window) {
 }
 
 void tick_elements() {
-    plane.tick();
+    //plane.tick();
+    float t = (-1)*((plane.position.y/10)*90.0f);
+    if (t > -90.0f && t < 90.0f)
+        dashboard.rotation = t;
     //cout<<"tick";
     //ball1.tick(stop*(-1));
     //ball2.tick(stop*1);
