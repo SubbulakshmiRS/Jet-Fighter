@@ -15,6 +15,7 @@ GLFWwindow *window;
 /**************************
 * Customizable functions *
 **************************/
+int pressl,pressr ;
 double cur_x_pos,cur_y_pos;
 int type;
 double add_x,add_y,add_z;
@@ -32,6 +33,14 @@ float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 
 Timer t60(1.0 / 60);
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        plane.shoot(2);
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        cout<<"right clicked\n";
+}
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -80,13 +89,14 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
 void draw() {
-    int views[6][3][3] = {
+    int views[7][3][3] = {
         {{0,0,7},{0,0,10},{0,1,0}}, // plane view
         {{0,5,5.5f},{0,-10,5.5f},{0,0,1}}, // top view 
         {{0,5,0},{0,0,5.5f},{0,1,0}}, // follow cam view 
         {{10,10,-10},{0,0,5.5f},{0,0,1}}, // tower view 
         {{0,5,0},{0,0,5.5f},{0,1,0}} ,// helicopter view starting 
-        {{0,0,5},{0,0,0},{0,1,0}}
+        {{0,0,5},{0,0,0},{0,1,0}},
+        {{0,0,0},{0,0,5.5f},{0,1,0}} // back view
     };
     // clear the color and depth in the frame buffer
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -134,8 +144,10 @@ void draw() {
 }
 
 void tick_input(GLFWwindow *window) {
+    //int left = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) , right = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
     int one = glfwGetKey(window, GLFW_KEY_1) , two = glfwGetKey(window, GLFW_KEY_2),three = glfwGetKey(window, GLFW_KEY_3);
     int four = glfwGetKey(window, GLFW_KEY_4),five = glfwGetKey(window, GLFW_KEY_5),six = glfwGetKey(window, GLFW_KEY_6); 
+    int seven = glfwGetKey(window, GLFW_KEY_7);
     int space = glfwGetKey(window, GLFW_KEY_SPACE);
     int w = glfwGetKey(window, GLFW_KEY_W);
     int a = glfwGetKey(window, GLFW_KEY_A);
@@ -154,6 +166,7 @@ void tick_input(GLFWwindow *window) {
     else if(four) { type = 3;add_x = add_y = add_z = 0;}
     else if(five) { type = 4;}
     else if(six) { type = 5;add_x = add_y = add_z = 0;}
+    else if(seven) { type = 6;add_x = add_y = add_z = 0;}
 
     if(space)
         plane.speed_y += 0.001f;
@@ -167,6 +180,28 @@ void tick_input(GLFWwindow *window) {
         plane.rotate_cc(); 
     else if(e)
         plane.rotate_c();
+    /*else if(left)
+    {
+        pressl++;
+        if (pressl == 6)
+        {
+        cout<<"left clicked\n";
+        plane.shoot(1);
+        pressl = 0;
+        }
+    }
+    else if(right)
+    {
+        cout<<"rightt clicked\n";
+        pressr++;
+        if (pressr == 6)
+        {
+        cout<<"right clicked\n";
+        plane.shoot(2);
+        pressr = 0;
+        }      
+    }*/
+
 
     /*if (f){ // first person 
         t=0;
@@ -195,7 +230,7 @@ void tick_input(GLFWwindow *window) {
 }
 
 void tick_elements() {
-    //plane.tick();
+    plane.tick();
     float t = (-1)*((plane.position.y/10)*90.0f);
     if (t > -90.0f && t < 90.0f)
         dashboard.rotation = t;
@@ -253,6 +288,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    pressl = pressr = 0;
     cur_x_pos = cur_y_pos = -1;
     add_x = add_y = add_z = 0;
     type = 0;
@@ -265,7 +301,7 @@ int main(int argc, char **argv) {
 
     window = initGLFW(width, height);
     glfwSetCursorPosCallback(window, cursor_position_callback);
-
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     initGL (window, width, height);
 
     /* Draw in loop */

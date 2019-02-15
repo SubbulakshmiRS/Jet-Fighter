@@ -1,9 +1,20 @@
 #include "main.h"
 #include "polygon.h"
+#include "ball.h"
 
 #ifndef PLANE_H
 #define PLANE_H
 
+struct Bullet{
+    Ball b;
+    glm::vec3 velocity;
+};
+
+struct Bomb{
+    Ball b;
+    glm::vec3 velocityh;
+    float velocityv;
+};
 
 class Plane {
 public:
@@ -20,6 +31,9 @@ public:
     void tilt_right();
     void rotate_c();
     void rotate_cc();
+    void shoot(int type);
+    std::vector <Bullet> bullets;
+    std::vector <Bomb> bombs;
 
 private:
     VAO *object;

@@ -9,7 +9,7 @@ Plane ::Plane(float x, float y,float z) {
     this->speed_x=this->speed_y = 0;
     int n =6;
     float x_pos = 1.0f,y_pos = 0;
-    GLfloat vertex_buffer_data[3*9*n] ;
+    GLfloat vertex_buffer_data[2*9*n +9*3] ;
 
     float angle = 360/n,c=1.0f,s=0;
     for(int i=0;i<n;i++)
@@ -60,7 +60,30 @@ Plane ::Plane(float x, float y,float z) {
     
     }
 
-    this->object = create3DObject(GL_TRIANGLES, 6*n, vertex_buffer_data,COLOR_DEAD_BLACK, GL_FILL);
+    angle = 360/n;c=1.0f;s=0;
+    for(int i = 0;i<3;i++)
+    {
+        float  a = (0.5f)*c,b=(0.5f)*s;
+        vertex_buffer_data[18*n+9*i] = a;
+        vertex_buffer_data[18*n+9*i+1] = b;
+        vertex_buffer_data[18*n+9*i+2] = 6.5f;
+        
+        a = (-0.5f)*c;b=(-0.5f)*s;
+        vertex_buffer_data[18*n+9*i+3] = a;
+        vertex_buffer_data[18*n+9*i+4] = b;
+        vertex_buffer_data[18*n+9*i+5] = 6.5f;
+
+        vertex_buffer_data[18*n+9*i+6] = 0;
+        vertex_buffer_data[18*n+9*i+7] = 0;
+        vertex_buffer_data[18*n+9*i+8] = 7.0f;
+
+        c=cos(((i+1)*angle*M_PI)/180);
+        s=sin(((i+1)*angle*M_PI)/180);
+
+    }
+
+
+    this->object = create3DObject(GL_TRIANGLES, 6*n+9, vertex_buffer_data,COLOR_DEAD_BLACK, GL_FILL);
     this->part1 = Polygon(0,0,5,COLOR_RED,0.5f,6,0);
 
     this->part2 = Polygon(0,0,6.5,COLOR_RED,0.5f,6,0);
@@ -84,6 +107,18 @@ void Plane::draw(glm::mat4 VP) {
     glm::mat4 translate4 = glm::translate (glm::vec3(0.0f,0.0f,-0.75f));
     this->part1.draw1(VP,this->rotate_vec,(translate3*rotate*translate4));
     this->part2.draw1(VP,this->rotate_vec,(translate4*rotate*translate3));
+
+    std::vector<Bullet>::iterator it;
+    for (it=this->bullets.begin(); it<(this->bullets.end()); it++)
+    {
+        it->b.draw(VP);
+    }
+    std::vector<Bomb>::iterator it2;
+    for (it2=this->bombs.begin(); it2<(this->bombs.end()); it2++)
+    {
+        it2->b.draw(VP);
+    }
+
 }
 
 void Plane::set_position(float x, float y,float z) {
@@ -91,13 +126,26 @@ void Plane::set_position(float x, float y,float z) {
 }
 
 void Plane::tick() {
-    // type is to differentiate between the different directions of the 2 balls 
-     //this->rotation += type;
-     //this->position.x -= type*speed;
-    this->position.y += this->speed_y;
+    /*this->position.y += this->speed_y;
     this->part1.position.y += this->speed_y;
     this->part2.position.y += this->speed_y;
-    this->speed_y -= 0.0005f;
+    this->speed_y -= 0.0005f;*/
+
+    std::vector<Bullet>::iterator it;
+    for (it=this->bullets.begin(); it<(this->bullets.end()); it++)
+    {
+        it->b.position.x += (it->velocity.x)*(1/100);
+        it->b.position.y += (it->velocity.y)*(1/100);
+        it->b.position.z += (it->velocity.z)*(1/100);
+    }
+    std::vector<Bomb>::iterator it2;
+    for (it2=this->bombs.begin(); it2<(this->bombs.end()); it2++)
+    {
+        it2->b.position.x += (it2->velocityh.x)*(1/100);
+        it2->b.position.y += (it2->velocityh.y)*(1/100);
+        it2->b.position.z += (it2->velocityh.z)*(1/100);
+        it2->b.position.z += it2->velocityv;
+    }
 }
 
 void Plane::tilt_left(){
@@ -150,6 +198,27 @@ void Plane::rotate_cc(){
     this->part2.rotation -= 1;
     this->rotation -= 1;
     this->rotate_vec = glm::vec3(0, 1, 0);
+}
+
+void Plane::shoot(int type)
+{
+    if(type == 1)
+    {
+        Bullet temp ;
+        temp.velocity = (this->part1.position - this->part2.position);
+        temp.b = Ball(this->position.x,this->position.y-0.6f,this->position.z,0.1f,COLOR_RED);
+        this->bullets.push_back(temp);
+    }
+    if(type == 2)
+    {
+        Bomb temp ;
+        temp.velocityh = (this->part1.position - this->part2.position);
+        temp.velocityv = 0;
+        temp.b = Ball(this->position.x,this->position.y-1,this->position.z,0.1f,COLOR_PINK);
+        this->bombs.push_back(temp);
+    }
+
+    
 }
 
 int Plane::move(float x , float y,float z){
