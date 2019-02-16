@@ -143,7 +143,7 @@ void draw() {
     background.draw(VP);
     //sm.draw(VP_dummy);
     dashboard.draw(VP_dummy); // dashboard not viewable 
-    ring.draw(VP);
+    //ring.draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
@@ -190,13 +190,17 @@ void tick_input(GLFWwindow *window) {
     {
         plane.position.y += 0.1f;
         plane.part1.position.y += 0.1f;
-        plane.part2.position.y += 0.1f;        
+        plane.part2.position.y += 0.1f; 
+        plane.part3.position.y += 0.1f;
+        plane.part4.position.y += 0.1f;       
     }
     if(down)
     {
         plane.position.y -= 0.1f;
         plane.part1.position.y -= 0.1f;
         plane.part2.position.y -= 0.1f;
+        plane.part3.position.y -= 0.1f;
+        plane.part4.position.y -= 0.1f;  
     }
     if(forward)
     {

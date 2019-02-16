@@ -9,7 +9,7 @@ Plane ::Plane(float x, float y,float z) {
     this->speed_x=this->speed_y = 0;
     int n =6;
     float x_pos = 1.0f,y_pos = 0;
-    GLfloat vertex_buffer_data[2*9*n +9*3] ;
+    GLfloat vertex_buffer_data[2*9*n +9*3 + 18*n] ;
 
     float angle = 360/n,c=1.0f,s=0;
     for(int i=0;i<n;i++)
@@ -20,10 +20,6 @@ Plane ::Plane(float x, float y,float z) {
         vertex_buffer_data[18*i+0]= a;//i*angle;
         vertex_buffer_data[18*i+1]=b;
         vertex_buffer_data[18*i+2]=5.0f;
-
-       /* vertex_buffer_data[18*i+18]= a;//i*angle;
-        vertex_buffer_data[18*i+19]=b;
-        vertex_buffer_data[18*i+20]=6.0f;*/
 
         vertex_buffer_data[18*i+9]= a;//i*angle;
         vertex_buffer_data[18*i+10]=b;
@@ -42,10 +38,6 @@ Plane ::Plane(float x, float y,float z) {
         vertex_buffer_data[18*i+4]=b;
         vertex_buffer_data[18*i+5]=6.5f;  
 
-       /* vertex_buffer_data[18*i+24]= a;//(i+1)*angle;
-        vertex_buffer_data[18*i+25]=b;
-        vertex_buffer_data[18*i+26]=6.0f;  */    
-
         vertex_buffer_data[18*i+6]= a;//(i+1)*angle;
         vertex_buffer_data[18*i+7]=b;
         vertex_buffer_data[18*i+8]=5.0f;   
@@ -53,10 +45,6 @@ Plane ::Plane(float x, float y,float z) {
         vertex_buffer_data[18*i+15]= a;//(i+1)*angle;
         vertex_buffer_data[18*i+16]=b;
         vertex_buffer_data[18*i+17]=6.5f;
-
-       /* vertex_buffer_data[18*i+21]= 0;//snout;
-        vertex_buffer_data[18*i+22]=0;
-        vertex_buffer_data[18*i+23]=6.5f;   */
     
     }
 
@@ -82,11 +70,48 @@ Plane ::Plane(float x, float y,float z) {
 
     }
 
+    angle = 360/n;c=1.0f;s=0;
+    for(int i=0;i<n;i++)
+    {
 
-    this->object = create3DObject(GL_TRIANGLES, 6*n+9, vertex_buffer_data,COLOR_DEAD_BLACK, GL_FILL);
+        float a = (0.3f)*c,b=(0.3f)*s+0.6f;
+
+        vertex_buffer_data[18*n+27+18*i+0]= a;//i*angle;
+        vertex_buffer_data[18*n+27+18*i+1]=b;
+        vertex_buffer_data[18*n+27+18*i+2]=5.2f;
+
+        vertex_buffer_data[18*n+27+18*i+9]= a;//i*angle;
+        vertex_buffer_data[18*n+27+18*i+10]=b;
+        vertex_buffer_data[18*n+27+18*i+11]=5.2f;
+
+        vertex_buffer_data[18*n+27+18*i+12]= a;//i*angle;
+        vertex_buffer_data[18*n+27+18*i+13]=b;
+        vertex_buffer_data[18*n+27+18*i+14]=5.7f;
+
+        c=cos(((i+1)*angle*M_PI)/180);
+        s=sin(((i+1)*angle*M_PI)/180);
+
+        a = (0.3f)*c;b=(0.3f)*s+0.6f;
+
+        vertex_buffer_data[18*n+27+18*i+3]= a;//(i+1)*angle;
+        vertex_buffer_data[18*n+27+18*i+4]=b;
+        vertex_buffer_data[18*n+27+18*i+5]=5.7f;   
+
+        vertex_buffer_data[18*n+27+18*i+6]= a;//(i+1)*angle;
+        vertex_buffer_data[18*n+27+18*i+7]=b;
+        vertex_buffer_data[18*n+27+18*i+8]=5.2f;   
+
+        vertex_buffer_data[18*n+27+18*i+15]= a;//(i+1)*angle;
+        vertex_buffer_data[18*n+27+18*i+16]=b;
+        vertex_buffer_data[18*n+27+18*i+17]=5.7f;
+    }    
+
+
+    this->object = create3DObject(GL_TRIANGLES, 12*n+9, vertex_buffer_data,COLOR_DEAD_BLACK, GL_FILL);
     this->part1 = Polygon(0,0,5,COLOR_RED,0.5f,6,0);
-
     this->part2 = Polygon(0,0,6.5,COLOR_RED,0.5f,6,0);
+    this->part3 = Polygon(0,0,5.2f,COLOR_BRIGHT_GREEN,0.3f,6,0);
+    this->part4 = Polygon(0,0,5.7f,COLOR_BRIGHT_GREEN,0.3f,6,0);
 }
 
 void Plane::draw(glm::mat4 VP) {
@@ -96,6 +121,7 @@ void Plane::draw(glm::mat4 VP) {
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     glm::mat4 translate1 = glm::translate (glm::vec3(0.0f,0.0f,-5.75f));    // glTranslatef
     glm::mat4 translate2 = glm::translate (glm::vec3(0.0f,0.0f,5.75f));    // glTranslatef
+    
     glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), this->rotate_vec);
     // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
     // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
@@ -103,10 +129,18 @@ void Plane::draw(glm::mat4 VP) {
     glm::mat4 MVP = VP * Matrices.model;
     glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
     draw3DObject(this->object);
+
     glm::mat4 translate3 = glm::translate (glm::vec3(0.0f,0.0f,0.75f));
     glm::mat4 translate4 = glm::translate (glm::vec3(0.0f,0.0f,-0.75f));
+    glm::mat4 translate5 = glm::translate (glm::vec3(0.0f,0.0f,0.05f));    // glTranslatef
+    glm::mat4 translate6 = glm::translate (glm::vec3(0.0f,0.6f,-0.05f));    // glTranslatef    
+    glm::mat4 translate7 = glm::translate (glm::vec3(0.0f,0.0f,0.55f));    // glTranslatef
+    glm::mat4 translate8 = glm::translate (glm::vec3(0.0f,0.6f,-0.55f));    // glTranslatef  
+
     this->part1.draw1(VP,this->rotate_vec,(translate3*rotate*translate4));
     this->part2.draw1(VP,this->rotate_vec,(translate4*rotate*translate3));
+    this->part3.draw1(VP,this->rotate_vec,(translate7*rotate*translate8));
+    this->part4.draw1(VP,this->rotate_vec,(translate5*rotate*translate6));
 
     std::vector<Bullet>::iterator it;
     for (it=this->bullets.begin(); it<(this->bullets.end()); it++)
@@ -154,9 +188,13 @@ void Plane::tilt_left(){
             this->rotation =0;
             this->part1.rotation = 0;
             this->part2.rotation = 0;
+            this->part3.rotation = 0;
+            this->part4.rotation = 0;
         }
     this->part1.rotation += 10;
     this->part2.rotation += 10;
+    this->part3.rotation += 10;
+    this->part4.rotation += 10;
     this->rotation += 10;
     this->rotate_vec = glm::vec3(0, 0, 1);
 }
@@ -167,9 +205,13 @@ void Plane::tilt_right(){
             this->rotation =0;
             this->part1.rotation = 0;
             this->part2.rotation = 0;
+            this->part3.rotation = 0;
+            this->part4.rotation = 0;
         }
     this->part1.rotation -= 10;
     this->part2.rotation -= 10;
+    this->part3.rotation -= 10;
+    this->part4.rotation -= 10;
     this->rotation -= 10;
     this->rotate_vec = glm::vec3(0, 0, 1);
 }
@@ -180,9 +222,13 @@ void Plane::rotate_c(){
             this->rotation =0;
             this->part1.rotation = 0;
             this->part2.rotation = 0;
+            this->part3.rotation = 0;
+            this->part4.rotation = 0;
         }
     this->part1.rotation += 1;
     this->part2.rotation += 1;
+    this->part3.rotation += 1;
+    this->part4.rotation += 1;
     this->rotation += 1;
     this->rotate_vec = glm::vec3(0, 1, 0);
 }
@@ -193,9 +239,13 @@ void Plane::rotate_cc(){
             this->rotation =0;
             this->part1.rotation = 0;
             this->part2.rotation = 0;
+            this->part3.rotation = 0;
+            this->part4.rotation = 0;
         }
     this->part1.rotation -= 1;
     this->part2.rotation -= 1;
+    this->part3.rotation -= 1;
+    this->part4.rotation -= 1;
     this->rotation -= 1;
     this->rotate_vec = glm::vec3(0, 1, 0);
 }

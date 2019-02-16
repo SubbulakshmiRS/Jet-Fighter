@@ -21,7 +21,7 @@ public:
     Plane() {}
     Plane(float x, float y, float z);
     glm::vec3 position,rotate_vec;
-    Polygon part1,part2;
+    Polygon part1,part2,part3,part4;
     float rotation,speed_x,speed_y;
     void draw(glm::mat4 VP);
     void set_position(float x, float y,float z);
