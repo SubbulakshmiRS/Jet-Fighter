@@ -28,8 +28,9 @@ int stop;
 Plane plane;
 Background background;
 Dashboard dashboard;
-Semi sm;
+//Semi sm;
 Ring ring;
+//Sphere sphere ;
 
 float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -144,6 +145,7 @@ void draw() {
     //sm.draw(VP_dummy);
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
+   //sphere.draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
@@ -299,7 +301,9 @@ void initGL(GLFWwindow *window, int width, int height) {
     plane = Plane(0,0,0);
     background = Background(1);
     dashboard = Dashboard(1);
-    sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);
+    //sphere = Sphere(0,0,10,COLOR_GREEN,1.0f);
+
+    //sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);
     glm::vec3 v = plane.part2.position - plane.part1.position;
     v=  glm::normalize(v);
     v+= plane.position;

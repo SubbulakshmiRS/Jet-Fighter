@@ -2,6 +2,52 @@
 #include "main.h"
 
 
+Sphere ::Sphere(float x, float y,float z,color_t color,float size) {
+    this->position = glm::vec3(x, y, z);
+    this->size = size;
+    this->rotation = 0;
+    this->n =20;
+    this->m = 50;
+       // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
+    // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+    //std::cout<<n<<"n \n";
+
+    for(int i=0;i<m;i++)
+    {
+        float angle = i*(360/this->m);
+        this->part[i] = Polygon(x,y,z,color,size,this->n,i*(360/this->m));
+        //std::cout<<" rotation "<<this->part[i].rotation;
+    }
+}
+
+void Sphere::draw(glm::mat4 VP) {
+    for(int i=0;i<m;i++)
+    {
+        this->part[i].position = this->position;
+        this->part[i].draw(VP,glm::vec3(0,1,0));
+    }
+}
+
+void Sphere::set_position(float x, float y,float z) {
+    this->position = glm::vec3(x, y, z);
+}
+
+void Sphere::tick(int type) {
+    // type is to differentiate between the different directions of the 2 balls 
+     //this->rotation += type;
+     //this->position.x -= type*speed;
+    //this->position.y -= type*speed;
+}
+
+int Sphere::move(float x , float y,float z){
+
+    this->position.x += x;
+    this->position.y += y;
+    this->position.z += z;
+    // check if the item is within the boundaries of the screen ( += 10 all sides)
+    return 0;
+}
+
 Semi ::Semi(float x, float y,float z,color_t color,float size,int n) {
     this->position = glm::vec3(x, y, z);
     this->size = size;
