@@ -158,8 +158,12 @@ void Plane::draw(glm::mat4 VP) {
 
 }
 
-void Plane::set_position(float x, float y,float z) {
-    this->position = glm::vec3(x, y, z);
+void Plane::set_position(glm::vec3 v) {
+    this->position -= v;
+    this->part1.set_position(v);
+    this->part2.set_position(v);
+    this->part3.set_position(v);
+    this->part4.set_position(v);
 }
 
 void Plane::tick() {
@@ -234,8 +238,8 @@ void Plane::rotate_c(){
     this->part4.rotation += 1;
     this->rotation += 1;
     float c =cos(this->rotation),s=sin(this->rotation);
-    glm::vec3 m = glm::vec3((0.75*c),0,(0.75*s));
-    glm::vec3 n = glm::vec3(((-0.75)*c),0,((-0.75)*s));
+    glm::vec3 m = glm::vec3((0.75*s),0,(0.75*c));
+    glm::vec3 n = glm::vec3(((-0.75)*s),0,((-0.75)*c));
     n += glm::vec3(0,0,5.75f);
     m += glm::vec3(0,0,5.75f);
     
@@ -259,8 +263,8 @@ void Plane::rotate_cc(){
     this->part4.rotation -= 1;
     this->rotation -= 1;
     float c =cos(this->rotation),s=sin(this->rotation);
-    glm::vec3 m = glm::vec3((0.75*c),0,(0.75*s));
-    glm::vec3 n = glm::vec3(((-0.75)*c),0,((-0.75)*s));
+    glm::vec3 m = glm::vec3((0.75*s),0,(0.75*c));
+    glm::vec3 n = glm::vec3(((-0.75)*s),0,((-0.75)*c));
     n += glm::vec3(0,0,5.75f);
     m += glm::vec3(0,0,5.75f);
 

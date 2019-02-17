@@ -5,28 +5,6 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
-struct Island{
-    Ball part1,part2,part3;
-    glm::vec3 position ;
-};
-
-class Background {
-public:
-    Background() {}
-    Background(int scene);
-    glm::vec3 position;
-    Ball part;
-    float rotation;
-    void draw(glm::mat4 VP);
-    void set_position(float x, float y,float z);
-    void tick(int type);
-    int move(float x , float y,float z);
-    std::vector<Island> islands;
-    void create();
-private:
-    VAO *object;
-};
-
 class Volcano {
 public:
     Volcano() {}
@@ -36,8 +14,34 @@ public:
     Polygon part1,part2;
     float rotation;
     void draw(glm::mat4 VP);
-    void set_position(float x, float y,float z);
+    void set_position(glm::vec3 v);
     void tick(int type);
+private:
+    VAO *object;
+};
+
+struct Island{
+    Ball part1,part2,part3;
+    glm::vec3 position ;
+    Volcano volcano;
+    int present ;
+};
+
+class Background {
+public:
+    Background() {}
+    Background(int scene);
+    glm::vec3 position;
+    int stat[4];
+    Ball part;
+    float rotation;
+    void draw(glm::mat4 VP);
+    void set_position(glm::vec3 v);
+    void tick(int type);
+    int move(float x , float y,float z);
+    std::vector<Island> islands;
+    void create();
+    void delete_element(glm::vec3 p);
 private:
     VAO *object;
 };

@@ -63,8 +63,8 @@ void Ball::draw(glm::mat4 VP) {
     draw3DObject(this->object);
 }
 
-void Ball::set_position(float x, float y,float z) {
-    this->position = glm::vec3(x, y, 0);
+void Ball::set_position(glm::vec3 v) {
+    this->position -= v;
 }
 
 void Ball::tick(int type) {

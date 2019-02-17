@@ -12,7 +12,7 @@ Sphere ::Sphere(float x, float y,float z,color_t color,float size) {
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     //std::cout<<n<<"n \n";
 
-    for(int i=0;i<m;i++)
+    for(int i=0;i<this->m;i++)
     {
         float angle = i*(360/this->m);
         this->part[i] = Polygon(x,y,z,color,size,this->n,i*(360/this->m));
@@ -21,15 +21,19 @@ Sphere ::Sphere(float x, float y,float z,color_t color,float size) {
 }
 
 void Sphere::draw(glm::mat4 VP) {
-    for(int i=0;i<m;i++)
+    for(int i=0;i<this->m;i++)
     {
         this->part[i].position = this->position;
         this->part[i].draw(VP,glm::vec3(0,1,0));
     }
 }
 
-void Sphere::set_position(float x, float y,float z) {
-    this->position = glm::vec3(x, y, z);
+void Sphere::set_position(glm::vec3 v) {
+    this->position -= v;
+    for(int i=0;i<this->m;i++)
+    {
+        this->part[i].set_position(v);
+    }
 }
 
 void Sphere::tick(int type) {
@@ -89,8 +93,8 @@ void Semi::draw(glm::mat4 VP) {
     draw3DObject(this->object);
 }
 
-void Semi::set_position(float x, float y,float z) {
-    this->position = glm::vec3(x, y, z);
+void Semi::set_position(glm::vec3 v) {
+    this->position -= v;
 }
 
 void Semi::tick(int type) {

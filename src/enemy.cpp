@@ -1,8 +1,8 @@
-#include "polygon.h"
+#include "enemy.h"
 #include "main.h"
 
 
-Polygon ::Polygon(float x, float y,float z,color_t color,float size,int n,float rotation) {
+Parachute ::Parachute(float x, float y,float z,color_t color,float size,int n,float rotation) {
     this->position = glm::vec3(x, y, z);
     this->size = size;
     this->rotation = rotation;
@@ -31,7 +31,7 @@ Polygon ::Polygon(float x, float y,float z,color_t color,float size,int n,float 
     this->object = create3DObject(GL_TRIANGLES, 3*n, vertex_buffer_data, color, GL_FILL);
 }
 
-void Polygon::draw(glm::mat4 VP,glm::vec3 rotate_vec) {
+void Parachute::draw(glm::mat4 VP,glm::vec3 rotate_vec) {
     Matrices.model = glm::mat4(0.5f);
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), rotate_vec);
@@ -43,7 +43,7 @@ void Polygon::draw(glm::mat4 VP,glm::vec3 rotate_vec) {
     draw3DObject(this->object);
 }
 
-void Polygon::draw1(glm::mat4 VP,glm::vec3 rotate_vec,glm::mat4 mat) {
+void Parachute::draw1(glm::mat4 VP,glm::vec3 rotate_vec,glm::mat4 mat) {
     Matrices.model = glm::mat4(0.5f);
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     //glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), rotate_vec);
@@ -55,7 +55,7 @@ void Polygon::draw1(glm::mat4 VP,glm::vec3 rotate_vec,glm::mat4 mat) {
     draw3DObject(this->object);
 }
 
-void Polygon::draw2(glm::mat4 VP,glm::mat4 mat) {
+void Parachute::draw2(glm::mat4 VP,glm::mat4 mat) {
     Matrices.model = glm::mat4(0.5f);
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     //glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), rotate_vec);
@@ -67,18 +67,18 @@ void Polygon::draw2(glm::mat4 VP,glm::mat4 mat) {
     draw3DObject(this->object);
 }
 
-void Polygon::set_position(glm::vec3 v) {
+void Parachute::set_position(glm::vec3 v) {
     this->position -= v;
 }
 
-void Polygon::tick(int type) {
+void Parachute::tick(int type) {
     // type is to differentiate between the different directions of the 2 balls 
      //this->rotation += type;
      //this->position.x -= type*speed;
     //this->position.y -= type*speed;
 }
 
-int Polygon::move(float x , float y,float z){
+int Parachute::move(float x , float y,float z){
 
     this->position.x += x;
     this->position.y += y;

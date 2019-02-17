@@ -1,13 +1,15 @@
 #include "main.h"
+#include "ball.h"
+#include "figure.h"
 
-#ifndef POLYGON_H
-#define POLYGON_H
+#ifndef ENEMY_H
+#define ENEMY_H
 
 
-class Polygon {
+class Parachute {
 public:
-    Polygon() {}
-    Polygon(float x, float y, float z,color_t color,float size,int n,float rotation);
+    Parachute() {}
+    Parachute(float x, float y, float z,color_t color,float size,int n,float rotation);
     glm::vec3 position,rotate_vec;
     float rotation;
     float size;
@@ -22,4 +24,4 @@ private:
     VAO *object;
 };
 
-#endif // POLYGON_H
+#endif // ENEMY_H

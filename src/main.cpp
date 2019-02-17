@@ -37,6 +37,11 @@ float camera_rotation_angle = 0;
 
 Timer t60(1.0 / 60);
 
+void set_position(glm::vec3 v)
+{
+    background.set_position(v);
+}
+
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
@@ -81,7 +86,6 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
         }
 
     }
-
 
     cur_x_pos = xpos;
     cur_y_pos = ypos;
@@ -177,9 +181,9 @@ void tick_input(GLFWwindow *window) {
     else if(seven) { type = 6;add_x = add_y = add_z = 0;}
 
     if(space)
-        plane.speed_y += 0.001f;
+        plane.speed_y += 0.0001f;
     else if(w)
-        plane.speed_x += 0.001f;
+        plane.speed_x += 0.0001f;
     else if(a)
         plane.tilt_left();
     else if(d)
@@ -191,36 +195,35 @@ void tick_input(GLFWwindow *window) {
 
     if(up)
     {
-        plane.position.y += 0.1f;
+        glm::vec3 v = glm::vec3(0,0.1f,0);
+        set_position(v);
+        /*plane.position.y += 0.1f;
         plane.part1.position.y += 0.1f;
         plane.part2.position.y += 0.1f; 
         plane.part3.position.y += 0.1f;
-        plane.part4.position.y += 0.1f;       
+        plane.part4.position.y += 0.1f;*/       
     }
     if(down)
     {
-        plane.position.y -= 0.1f;
+        glm::vec3 v = glm::vec3(0,-0.1f,0);
+        set_position(v);
+        /*plane.position.y -= 0.1f;
         plane.part1.position.y -= 0.1f;
         plane.part2.position.y -= 0.1f;
         plane.part3.position.y -= 0.1f;
-        plane.part4.position.y -= 0.1f;  
+        plane.part4.position.y -= 0.1f; */ 
     }
     if(forward)
     {
         pressl++;
         if (pressl == 4)
         {
-        glm::vec3 v = plane.part2.position - plane.part1.position;
+        glm::vec3 v = plane.part1.position - plane.part2.position;
          v=  glm::normalize(v);
-        cout<<plane.part1.position.x<<" "<<plane.part1.position.y<<" "<<plane.part1.position.z<<" pos part1 \n";
-        cout<<plane.position.x<<" "<<plane.position.y<<" "<<plane.position.z<<" pos \n";
-        plane.position += v;
-        cout<<plane.position.x<<" "<<plane.position.y<<" "<<plane.position.z<<" pos after \n";
-        plane.part1.position += v;
-        plane.part2.position += v;
-        plane.part3.position += v;    
-        plane.part4.position += v;
         pressl = 0;
+        plane.speed_x += (float)((v.x)/1000);
+        plane.speed_y += (float)((v.y)/1000);
+        plane.speed_z += (float)((v.z)/1000);
         }
 
     }
@@ -287,9 +290,22 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ring.tick();
     plane.tick();
+    glm::vec3 v = glm::vec3(plane.speed_x,plane.speed_y,plane.speed_z);
+    set_position(v);
+
     float t = (-1)*((plane.position.y/10)*90.0f);
     if (t > -90.0f && t < 90.0f)
         dashboard.rotation = t;
+
+    background.delete_element(plane.position);
+    for(int i=0;i<4;i++)
+    {
+        if(background.stat[i] == 0)
+        {
+            background.create();
+            background.stat[i] = 1;
+        }
+    }
     //cout<<"tick";
     //ball1.tick(stop*(-1));
     //ball2.tick(stop*1);
