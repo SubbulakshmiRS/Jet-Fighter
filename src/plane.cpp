@@ -74,7 +74,7 @@ Plane ::Plane(float x, float y,float z) {
     for(int i=0;i<n;i++)
     {
 
-        float a = (0.3f)*c,b=(0.3f)*s+0.6f;
+        float a = (0.3f)*c,b=(0.3f)*s+0.7f;
 
         vertex_buffer_data[18*n+27+18*i+0]= a;//i*angle;
         vertex_buffer_data[18*n+27+18*i+1]=b;
@@ -91,7 +91,7 @@ Plane ::Plane(float x, float y,float z) {
         c=cos(((i+1)*angle*M_PI)/180);
         s=sin(((i+1)*angle*M_PI)/180);
 
-        a = (0.3f)*c;b=(0.3f)*s+0.6f;
+        a = (0.3f)*c;b=(0.3f)*s+0.7f;
 
         vertex_buffer_data[18*n+27+18*i+3]= a;//(i+1)*angle;
         vertex_buffer_data[18*n+27+18*i+4]=b;
@@ -118,11 +118,14 @@ void Plane::draw(glm::mat4 VP) {
     
     Matrices.model = glm::mat4(0.5f);
 
+    glm::mat4 d1 = glm::translate (this->position+glm::vec3(0,0,5));
+    glm::mat4 d2 = glm::translate (this->position+glm::vec3(0,0,6.5f));
+
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
     glm::mat4 translate1 = glm::translate (glm::vec3(0.0f,0.0f,-5.75f));    // glTranslatef
     glm::mat4 translate2 = glm::translate (glm::vec3(0.0f,0.0f,5.75f));    // glTranslatef
-    
     glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), this->rotate_vec);
+    
     // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
     // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
     Matrices.model *= (translate *translate2*rotate*translate1);
@@ -133,12 +136,12 @@ void Plane::draw(glm::mat4 VP) {
     glm::mat4 translate3 = glm::translate (glm::vec3(0.0f,0.0f,0.75f));
     glm::mat4 translate4 = glm::translate (glm::vec3(0.0f,0.0f,-0.75f));
     glm::mat4 translate5 = glm::translate (glm::vec3(0.0f,0.0f,0.05f));    // glTranslatef
-    glm::mat4 translate6 = glm::translate (glm::vec3(0.0f,0.6f,-0.05f));    // glTranslatef    
+    glm::mat4 translate6 = glm::translate (glm::vec3(0.0f,0.7f,-0.05f));    // glTranslatef    
     glm::mat4 translate7 = glm::translate (glm::vec3(0.0f,0.0f,0.55f));    // glTranslatef
-    glm::mat4 translate8 = glm::translate (glm::vec3(0.0f,0.6f,-0.55f));    // glTranslatef  
+    glm::mat4 translate8 = glm::translate (glm::vec3(0.0f,0.7f,-0.55f));    // glTranslatef  
 
-    this->part1.draw1(VP,this->rotate_vec,(translate3*rotate*translate4));
-    this->part2.draw1(VP,this->rotate_vec,(translate4*rotate*translate3));
+    this->part1.draw2(VP,(translate3*d1*rotate*translate4));
+    this->part2.draw2(VP,(translate4*d2*rotate*translate3));
     this->part3.draw1(VP,this->rotate_vec,(translate7*rotate*translate8));
     this->part4.draw1(VP,this->rotate_vec,(translate5*rotate*translate6));
 
@@ -230,6 +233,14 @@ void Plane::rotate_c(){
     this->part3.rotation += 1;
     this->part4.rotation += 1;
     this->rotation += 1;
+    float c =cos(this->rotation),s=sin(this->rotation);
+    glm::vec3 m = glm::vec3((0.75*c),0,(0.75*s));
+    glm::vec3 n = glm::vec3(((-0.75)*c),0,((-0.75)*s));
+    n += glm::vec3(0,0,5.75f);
+    m += glm::vec3(0,0,5.75f);
+    
+    this->part1.position = n;
+    this->part2.position = m; 
     this->rotate_vec = glm::vec3(0, 1, 0);
 }
 
@@ -247,6 +258,14 @@ void Plane::rotate_cc(){
     this->part3.rotation -= 1;
     this->part4.rotation -= 1;
     this->rotation -= 1;
+    float c =cos(this->rotation),s=sin(this->rotation);
+    glm::vec3 m = glm::vec3((0.75*c),0,(0.75*s));
+    glm::vec3 n = glm::vec3(((-0.75)*c),0,((-0.75)*s));
+    n += glm::vec3(0,0,5.75f);
+    m += glm::vec3(0,0,5.75f);
+
+    this->part1.position = n;
+    this->part2.position = m; 
     this->rotate_vec = glm::vec3(0, 1, 0);
 }
 
@@ -256,7 +275,7 @@ void Plane::shoot(int type)
     {
         Bullet temp ;
         temp.velocity = (this->part1.position - this->part2.position);
-        temp.b = Ball(this->position.x,this->position.y-0.6f,this->position.z,0.1f,COLOR_RED);
+        temp.b = Ball(this->position.x,this->position.y-0.7f,this->position.z,0.1f,COLOR_RED);
         this->bullets.push_back(temp);
     }
     if(type == 2)

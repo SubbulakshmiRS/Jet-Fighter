@@ -32,7 +32,7 @@ Dashboard dashboard;
 Ring ring;
 //Sphere sphere ;
 
-float screen_zoom = 1, screen_center_x = 0, screen_center_y = 0;
+float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
 
 Timer t60(1.0 / 60);
@@ -158,6 +158,7 @@ void tick_input(GLFWwindow *window) {
     int a = glfwGetKey(window, GLFW_KEY_A);
     int d = glfwGetKey(window, GLFW_KEY_D);
     int f = glfwGetKey(window, GLFW_KEY_F) , e = glfwGetKey(window, GLFW_KEY_E);
+    int create = glfwGetKey(window, GLFW_KEY_C);
 
     int up  = glfwGetKey(window, GLFW_KEY_UP);
     int down = glfwGetKey(window, GLFW_KEY_DOWN);
@@ -211,11 +212,28 @@ void tick_input(GLFWwindow *window) {
         {
         glm::vec3 v = plane.part2.position - plane.part1.position;
          v=  glm::normalize(v);
+        cout<<plane.part1.position.x<<" "<<plane.part1.position.y<<" "<<plane.part1.position.z<<" pos part1 \n";
+        cout<<plane.position.x<<" "<<plane.position.y<<" "<<plane.position.z<<" pos \n";
         plane.position += v;
+        cout<<plane.position.x<<" "<<plane.position.y<<" "<<plane.position.z<<" pos after \n";
+        plane.part1.position += v;
+        plane.part2.position += v;
+        plane.part3.position += v;    
+        plane.part4.position += v;
         pressl = 0;
         }
 
     }
+    if(create)
+    {
+        pressr++;
+        if(pressr == 5)
+        {
+        background.create();
+        pressr = 0;
+        }
+    }
+
     
     /*else if(left)
     {

@@ -13,6 +13,7 @@ public:
     float size;
     void draw(glm::mat4 VP,glm::vec3 rotate_vec);
     void draw1(glm::mat4 VP,glm::vec3 rotate_vec,glm::mat4 mat);
+    void draw2(glm::mat4 VP,glm::mat4 mat);
     void set_position(float x, float y,float z);
     void tick(int type);
     int move(float x , float y,float z);
