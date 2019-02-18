@@ -18,6 +18,7 @@ Sphere ::Sphere(float x, float y,float z,color_t color,float size) {
         this->part[i] = Polygon(x,y,z,color,size,this->n,i*(360/this->m));
         //std::cout<<" rotation "<<this->part[i].rotation;
     }
+    this->part[50] = Polygon(x,y,z,color,size,this->n,90);
 }
 
 void Sphere::draw(glm::mat4 VP) {
@@ -26,6 +27,7 @@ void Sphere::draw(glm::mat4 VP) {
         this->part[i].position = this->position;
         this->part[i].draw(VP,glm::vec3(0,1,0));
     }
+    this->part[50].draw(VP,glm::vec3(1,0,0));
 }
 
 void Sphere::set_position(glm::vec3 v) {
@@ -34,6 +36,7 @@ void Sphere::set_position(glm::vec3 v) {
     {
         this->part[i].set_position(v);
     }
+    this->part[50].set_position(v);
 }
 
 void Sphere::tick(int type) {

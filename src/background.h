@@ -1,6 +1,7 @@
 #include "main.h"
 #include "ball.h"
 #include "polygon.h"
+#include "figure.h"
 
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
@@ -60,6 +61,25 @@ public:
     void draw(glm::mat4 VP,glm::vec3 p);
     void set_position(glm::vec3 v);
     void tick(int type);
+    double speed;
+private:
+    VAO *object;
+};
+
+class Checkpoint {
+public:
+    Checkpoint() {}
+    Checkpoint(float x, float y, float z);
+    glm::vec3 position;
+    glm::vec3 align ;
+    Ball platform ;
+    Sphere part1;
+    float top , bottom , height ;
+    float rotation;
+    void draw(glm::mat4 VP,glm::vec3 p);
+    void set_position(glm::vec3 v);
+    void tick(int type);
+    int move(float x , float y,float z);
     double speed;
 private:
     VAO *object;

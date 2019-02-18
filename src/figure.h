@@ -12,7 +12,7 @@ public:
     float rotation;
     float size;
     float n,m;
-    Polygon part[50];
+    Polygon part[60];
     void draw(glm::mat4 VP);
     void set_position(glm::vec3 v);
     void tick(int type);

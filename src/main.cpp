@@ -31,6 +31,7 @@ Dashboard dashboard;
 //Semi sm;
 Ring ring;
 Arrow arrow ;
+Checkpoint checkpt;
 //Sphere sphere ;
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
@@ -149,6 +150,7 @@ void draw() {
     background.draw(VP);
     //sm.draw(VP_dummy);
     arrow.draw(VP,glm::vec3(1,0,1));
+    checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
    //sphere.draw(VP);
@@ -339,6 +341,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     background = Background(1);
     dashboard = Dashboard(1);
     arrow = Arrow(0,0,0);
+    checkpt = Checkpoint(0,0,0);
     //sphere = Sphere(0,0,10,COLOR_GREEN,1.0f);
 
     //sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);

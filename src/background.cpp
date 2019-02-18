@@ -349,4 +349,114 @@ void Arrow::tick(int type) {
     //this->position.y -= type*speed;
 }
 
+Checkpoint ::Checkpoint(float x, float y,float z) {
+    this->position = glm::vec3(5, -7, 1);
+    this->rotation = 0;
+    this->align = glm::vec3(0,1,0);
+       // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
+    // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+    this->top = 0.5f;
+    this->bottom = 1.0f;
+    this->height = 3.0f;
+    int n =10;
+    float x_pos = 1.0f,y_pos = 0;
+    GLfloat vertex_buffer_data[2*9*n] ;
 
+    float angle = 360/n,c=1.0f,s=0;
+    for(int i=0;i<n;i++)
+    {
+
+        float a = (this->top)*c,b=(this->top)*s;
+        float a1 = (this->bottom)*c,b1=(this->bottom)*s;
+
+        vertex_buffer_data[18*i+0]= a;//i*angle;
+        vertex_buffer_data[18*i+1]=this->height;
+        vertex_buffer_data[18*i+2]=b;
+
+        vertex_buffer_data[18*i+9]= a;//i*angle;
+        vertex_buffer_data[18*i+10]=this->height;
+        vertex_buffer_data[18*i+11]=b;
+
+        vertex_buffer_data[18*i+12]= a1;//i*angle;
+        vertex_buffer_data[18*i+13]=0;
+        vertex_buffer_data[18*i+14]=b1;
+
+        c=cos(((i+1)*angle*M_PI)/180);
+        s=sin(((i+1)*angle*M_PI)/180);
+
+        a = (this->top)*c;b=(this->top)*s;
+        a1 = (this->bottom)*c;b1=(this->bottom)*s;
+
+        vertex_buffer_data[18*i+3]= a1;//(i+1)*angle;
+        vertex_buffer_data[18*i+4]=0;
+        vertex_buffer_data[18*i+5]=b1;  
+
+        vertex_buffer_data[18*i+6]= a;//(i+1)*angle;
+        vertex_buffer_data[18*i+7]=this->height;
+        vertex_buffer_data[18*i+8]=b;   
+
+        vertex_buffer_data[18*i+15]=a1;//(i+1)*angle;
+        vertex_buffer_data[18*i+16]=0;
+        vertex_buffer_data[18*i+17]=b1;
+    
+    }
+
+    this->object = create3DObject(GL_TRIANGLES, 6*n, vertex_buffer_data,COLOR_SMOKE, GL_FILL);
+    this->platform = Ball(this->position.x,this->position.y-2.5f,this->position.z,1.5f,COLOR_BROWN);
+    this->part1 = Sphere(this->position.x,this->position.y,this->position.z,COLOR_DEAD_BLACK,0.75f);
+}
+
+void Checkpoint::draw(glm::mat4 VP,glm::vec3 p) {
+    
+    glm::vec3 direction = p - this->position ;
+    glm::vec3 v = cross_product(this->align,direction);
+    float s = magnitude(v);
+    float c = dot_product(this->align,direction);
+
+    float m[16]={
+        0,(-1)*v.z,v.y,0,
+        v.z,0,(-1)*v.x,0,
+        (-1)*v.y,v.x,0,0,
+        0,0,0,1,
+    } ;
+
+    float t = 1/(1+c);
+    glm::mat4 vrot1 = glm::make_mat4(m);;
+    glm::mat4 vrot = glm::transpose(vrot1);
+
+    glm::mat4 result = glm::mat4(1.0f) + vrot + vrot*vrot*t ;
+
+    Matrices.model = glm::mat4(0.5f);
+    glm::mat4 translate = glm::translate (this->position);    // glTranslatef
+    glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), glm::vec3(0, 0, 1));
+    // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
+    // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
+    Matrices.model *= (translate * result);
+    glm::mat4 MVP = VP * Matrices.model;
+    glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    draw3DObject(this->object);
+    this->part1.draw(VP);
+    this->platform.draw(VP);
+}
+
+void Checkpoint::set_position(glm::vec3 v) {
+    this->position -= v;
+    this->platform.set_position(v);
+    this->part1.set_position(v);
+}
+
+void Checkpoint::tick(int type) {
+    // type is to differentiate between the different directions of the 2 balls 
+     //this->rotation += type;
+     //this->position.x -= type*speed;
+    //this->position.y -= type*speed;
+}
+
+int Checkpoint::move(float x , float y,float z){
+
+    this->position.x += x;
+    this->position.y += y;
+    this->position.z += z;
+    // check if the item is within the boundaries of the screen ( += 10 all sides)
+    return 0;
+}
