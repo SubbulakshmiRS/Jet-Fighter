@@ -5,6 +5,10 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
+glm::vec3 cross_product(glm::vec3 a,glm::vec3 b);
+float dot_product(glm::vec3 a,glm::vec3 b);
+float magnitude(glm::vec3 a);
+
 class Volcano {
 public:
     Volcano() {}
@@ -46,6 +50,20 @@ private:
     VAO *object;
 };
 
+class Arrow {
+public:
+    Arrow() {}
+    Arrow(float x, float y, float Z);
+    glm::vec3 position;
+    glm::vec3 align ;
+    float rotation;
+    void draw(glm::mat4 VP,glm::vec3 p);
+    void set_position(glm::vec3 v);
+    void tick(int type);
+    double speed;
+private:
+    VAO *object;
+};
 
 
 #endif // BACKGROUND_H

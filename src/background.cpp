@@ -1,6 +1,33 @@
 #include "background.h"
 #include "main.h"
 
+glm::vec3 cross_product(glm::vec3 a,glm::vec3 b)
+{
+    a = glm::normalize(a);
+    b = glm::normalize(b);
+    float u1=a.x, u2=a.y, u3=a.z, v1=b.x, v2=b.y, v3=b.z;
+    float  uvi, uvj, uvk;
+    
+    uvi = u2 * v3 - v2 * u3;
+    uvj = v1 * u3 - u1 * v3;
+    uvk = u1 * v2 - v1 * u2;
+    return glm::vec3(uvi,uvj,uvk);
+}
+
+float dot_product(glm::vec3 a,glm::vec3 b)
+{
+    a = glm::normalize(a);
+    b = glm::normalize(b);
+    float result = a.x*b.x + a.y*b.y + a.z*b.z;
+    return result ;
+}
+
+float magnitude(glm::vec3 a)
+{
+    float r = a.x*a.x + a.y*a.y + a.z*a.z;
+    float result = sqrt(r);
+    return result;
+}
 
 Background ::Background(int scene) {
     //float x = 0,y=0,z=10.0f;
@@ -198,3 +225,128 @@ void Volcano::tick(int type) {
      //this->position.x -= type*speed;
     //this->position.y -= type*speed;
 }
+
+Arrow ::Arrow(float x, float y,float z) {
+    this->position = glm::vec3(1,1,1);
+    this->rotation = 0;
+    this->align = glm::vec3(0,0,1);
+    GLfloat vertex_buffer_data[] = {
+        0.65f,0.2f,0,
+        0,0.2f,0.65f,
+        -0.65f,0.2f,0,
+        0.15f,0.2f,0,
+        -0.15f,0.2f,0,
+        0.15f,0.2f,-1,
+        -0.15f,0.2f,0,
+        -0.15f,0.2f,-1,
+        0.15f,0.2f,-1, // top half 
+
+       0.65f,-0.2f,0,
+        0,-0.2f,0.65f,
+        -0.65f,-0.2f,0,
+        0.15f,-0.2f,0,
+        -0.15f,-0.2f,0,
+        0.15f,-0.2f,-1,
+        -0.15f,-0.2f,0,
+        -0.15f,-0.2f,-1,
+        0.15f,-0.2f,-1, // bottom half
+
+        -0.15f,0.2f,-1,
+        -0.15f,-0.2f,-1,
+        0.15f,-0.2f,-1,
+        -0.15f,0.2f,-1,
+        0.15f,-0.2f,-1,
+        0.15f,0.2f,-1, // rect 1
+
+        0.15f,0.2f,-1,
+        0.15f,-0.2f,-1,
+        0.15f,-0.2f,0,
+        0.15f,0.2f,-1,
+        0.15f,-0.2f,0,
+        0.15f,0.2f,0, //rect 2
+
+        -0.15f,0.2f,-1,
+        -0.15f,-0.2f,-1,
+        -0.15f,-0.2f,0,
+        -0.15f,0.2f,-1,
+        -0.15f,-0.2f,0,
+        -0.15f,0.2f,0, // rect 7
+
+        0.15f,0.2f,0,
+        0.15f,-0.2f,0,
+        0.65f,-0.2f,0,
+        0.15f,0.2f,0,
+        0.65f,-0.2f,0,
+        0.65f,0.2f,0, // rect 3
+
+        -0.15f,0.2f,0,
+        -0.15f,-0.2f,0,
+        -0.65f,-0.2f,0,
+        -0.15f,0.2f,0,
+        -0.65f,-0.2f,0,
+        -0.65f,0.2f,0,  // rect 6
+
+        0.65f,0.2f,0,
+        0.65f,-0.2f,0,
+        0,-0.2f,0.65f,
+        0.65f,0.2f,0,
+        0,-0.2f,0.65f,
+        0,0.2f,0.65f, // rect 4
+
+        0,0.2f,0.65f,
+        0,-0.2f,0.65f,
+        -0.65f,-0.2f,0,
+        0,0.2f,0.65f,
+        -0.65f,-0.2f,0,
+        -0.65f,0.2f,0, // rect 5 
+
+    };
+    int s = sizeof(vertex_buffer_data)/sizeof(vertex_buffer_data[0]);
+    s = s/3;
+
+    this->object = create3DObject(GL_TRIANGLES, s, vertex_buffer_data, COLOR_RED, GL_FILL);
+}
+
+void Arrow::draw(glm::mat4 VP,glm::vec3 p) {
+    //p is the checkpoint 
+    glm::vec3 direction = p - this->position ;
+    glm::vec3 v = cross_product(this->align,direction);
+    float s = magnitude(v);
+    float c = dot_product(this->align,direction);
+
+    float m[16]={
+        0,(-1)*v.z,v.y,0,
+        v.z,0,(-1)*v.x,0,
+        (-1)*v.y,v.x,0,0,
+        0,0,0,1,
+    } ;
+
+    float t = 1/(1+c);
+    glm::mat4 vrot1 = glm::make_mat4(m);;
+    glm::mat4 vrot = glm::transpose(vrot1);
+
+    glm::mat4 result = glm::mat4(1.0f) + vrot + vrot*vrot*t ;
+
+    Matrices.model = glm::mat4(0.5f);
+    glm::mat4 translate = glm::translate (this->position);    // glTranslatef
+    glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), glm::vec3(0, 0, 1));
+    // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
+    // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
+    Matrices.model *= (translate * result);
+    glm::mat4 MVP = VP * Matrices.model;
+    glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    draw3DObject(this->object);
+}
+
+void Arrow::set_position(glm::vec3 v) {
+    this->position -= v;
+}
+
+void Arrow::tick(int type) {
+    // type is to differentiate between the different directions of the 2 balls 
+     //this->rotation += type;
+     //this->position.x -= type*speed;
+    //this->position.y -= type*speed;
+}
+
+

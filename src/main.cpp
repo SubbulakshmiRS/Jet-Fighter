@@ -30,6 +30,7 @@ Background background;
 Dashboard dashboard;
 //Semi sm;
 Ring ring;
+Arrow arrow ;
 //Sphere sphere ;
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
@@ -147,6 +148,7 @@ void draw() {
     plane.draw(VP);
     background.draw(VP);
     //sm.draw(VP_dummy);
+    arrow.draw(VP,glm::vec3(1,0,1));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
    //sphere.draw(VP);
@@ -299,6 +301,7 @@ void tick_elements() {
         dashboard.rotation = t;
 
     background.delete_element(plane.position);
+    
     if(background.stat < 4)
     {
         while(background.stat<4)
@@ -335,6 +338,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     plane = Plane(0,0,0);
     background = Background(1);
     dashboard = Dashboard(1);
+    arrow = Arrow(0,0,0);
     //sphere = Sphere(0,0,10,COLOR_GREEN,1.0f);
 
     //sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);
