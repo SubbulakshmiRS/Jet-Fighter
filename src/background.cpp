@@ -17,10 +17,7 @@ Background ::Background(int scene) {
 
     this->object = create3DObject(GL_TRIANGLES, 6, vertex_buffer_data,COLOR_SEA_BLUE, GL_FILL);
 
-    for(int i=0;i<4;i++)
-    {
-        stat[i] = 0;
-    }
+    this->stat = 0;
     //this->part = Ball(0,0,10,10.0f,COLOR_RED);
 }
 
@@ -49,6 +46,7 @@ void Background::set_position(glm::vec3 v) {
     this->position -= v;
     for (std::vector<Island>::iterator it = this->islands.begin() ; it != this->islands.end(); ++it)
     {
+        it->position -= v;
         it->part1.set_position(v);
         it->part2.set_position(v);
         it->part3.set_position(v);
@@ -72,13 +70,13 @@ int Background::move(float x , float y,float z){
     return 0;
 }
 
-void Background::create() {
+void Background::create(glm::vec3 v) {
 
     int r[] = {1,-1};
     int temp = rand()%2; temp = r[temp];
     Island t ;
     t.present = rand()%2;
-    float x = this->position.x+2.0f+(rand()%10-4),y=this->position.y-0.25f,z=this->position.z+(rand()%10-2);
+    float x = v.x+2.0f+(rand()%10-4),y=this->position.y-0.25f,z=v.z+(rand()%10-2)+10;
     double step = (rand()%100);
     step = step/100;
     t.part1 = Ball(x+step,y+step,z+step,0.5,COLOR_BRIGHT_GREEN);
@@ -94,6 +92,7 @@ void Background::create() {
     if(t.present)
         t.volcano = Volcano(t.part2.position.x,t.part2.position.y+0.7f,t.part2.position.z);
 
+    this->stat++;
     this->islands.push_back(t);
 
 }
@@ -102,11 +101,14 @@ void Background::delete_element(glm::vec3 p ){
     int i=0;
     for (std::vector<Island>::iterator it = this->islands.begin() ; it != this->islands.end(); ++it)
     {
+        //std::cout<<i;
         float d1 = fabs(it->position.x-p.x) , d2 = fabs(it->position.z-p.z);
-        if (d1 > 20 || d2 > 20)
+        //std::cout<<"d1 "<<d1<<" d2 "<<d2<<"\n";
+        if (d1 > 20 || d2 > 20 )
         {
             this->islands.erase(it);
-            this->stat[i] = 0;
+            this->stat--;
+            std::cout<<"deleted \n";
         }
         i++;
 

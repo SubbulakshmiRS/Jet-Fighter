@@ -218,7 +218,7 @@ void tick_input(GLFWwindow *window) {
         pressl++;
         if (pressl == 4)
         {
-        glm::vec3 v = plane.part1.position - plane.part2.position;
+        glm::vec3 v = plane.part2.position - plane.part1.position;
          v=  glm::normalize(v);
         pressl = 0;
         plane.speed_x += (float)((v.x)/1000);
@@ -232,7 +232,7 @@ void tick_input(GLFWwindow *window) {
         pressr++;
         if(pressr == 5)
         {
-        background.create();
+        background.create(plane.position);
         pressr = 0;
         }
     }
@@ -293,17 +293,17 @@ void tick_elements() {
     glm::vec3 v = glm::vec3(plane.speed_x,plane.speed_y,plane.speed_z);
     set_position(v);
 
-    float t = (-1)*((plane.position.y/10)*90.0f);
+    float a = plane.position.y - background.position.y - 10;
+    float t = (-1)*((a/10)*90.0f);
     if (t > -90.0f && t < 90.0f)
         dashboard.rotation = t;
 
     background.delete_element(plane.position);
-    for(int i=0;i<4;i++)
+    if(background.stat < 4)
     {
-        if(background.stat[i] == 0)
+        while(background.stat<4)
         {
-            background.create();
-            background.stat[i] = 1;
+            background.create(plane.position);
         }
     }
     //cout<<"tick";

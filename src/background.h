@@ -32,7 +32,7 @@ public:
     Background() {}
     Background(int scene);
     glm::vec3 position;
-    int stat[4];
+    int stat;
     Ball part;
     float rotation;
     void draw(glm::mat4 VP);
@@ -40,7 +40,7 @@ public:
     void tick(int type);
     int move(float x , float y,float z);
     std::vector<Island> islands;
-    void create();
+    void create(glm::vec3 v);
     void delete_element(glm::vec3 p);
 private:
     VAO *object;
