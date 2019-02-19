@@ -6,7 +6,7 @@ Plane ::Plane(float x, float y,float z) {
     this->position = glm::vec3(x, y, z);
     this->rotate_vec = glm::vec3(1, 0, 0);
     this->rotation = 0;
-    this->speed_x=this->speed_y = 0;
+    this->speed_x=this->speed_y = this->speed_z = 0;
     int n =6;
     float x_pos = 1.0f,y_pos = 0;
     GLfloat vertex_buffer_data[2*9*n +9*3 + 18*n] ;
@@ -159,11 +159,16 @@ void Plane::draw(glm::mat4 VP) {
 }
 
 void Plane::set_position(glm::vec3 v) {
-    this->position -= v;
-    this->part1.set_position(v);
-    this->part2.set_position(v);
-    this->part3.set_position(v);
-    this->part4.set_position(v);
+    std::vector<Bullet>::iterator it;
+    for (it=this->bullets.begin(); it<(this->bullets.end()); it++)
+    {
+        it->b.set_position(v);
+    }
+    std::vector<Bomb>::iterator it2;
+    for (it2=this->bombs.begin(); it2<(this->bombs.end()); it2++)
+    {
+        it2->b.set_position(v);
+    }
 }
 
 void Plane::tick() {
@@ -175,17 +180,13 @@ void Plane::tick() {
     std::vector<Bullet>::iterator it;
     for (it=this->bullets.begin(); it<(this->bullets.end()); it++)
     {
-        it->b.position.x += (it->velocity.x)*(1/100);
-        it->b.position.y += (it->velocity.y)*(1/100);
-        it->b.position.z += (it->velocity.z)*(1/100);
+        it->b.position += it->velocity;
     }
     std::vector<Bomb>::iterator it2;
     for (it2=this->bombs.begin(); it2<(this->bombs.end()); it2++)
     {
-        it2->b.position.x += (it2->velocityh.x)*(1/100);
-        it2->b.position.y += (it2->velocityh.y)*(1/100);
-        it2->b.position.z += (it2->velocityh.z)*(1/100);
-        it2->b.position.z += it2->velocityv;
+        it2->b.position += it2->velocityh;
+        it2->b.position.y += it2->velocityv;
     }
 }
 
@@ -278,16 +279,26 @@ void Plane::shoot(int type)
     if(type == 1)
     {
         Bullet temp ;
-        temp.velocity = (this->part1.position - this->part2.position);
-        temp.b = Ball(this->position.x,this->position.y-0.7f,this->position.z,0.1f,COLOR_RED);
+        glm::vec3 a,b;
+        a = glm::normalize(this->part2.position - this->part1.position);
+        b.x = a.x*(0.01f);
+        b.y = a.y*(0.01f);
+        b.z = a.z*(0.01f);
+        temp.velocity = b;
+        temp.b = Ball(this->position.x,this->position.y-0.7f,this->position.z+5.5f,0.1f,COLOR_RED);
         this->bullets.push_back(temp);
     }
     if(type == 2)
     {
         Bomb temp ;
-        temp.velocityh = (this->part1.position - this->part2.position);
-        temp.velocityv = 0;
-        temp.b = Ball(this->position.x,this->position.y-1,this->position.z,0.1f,COLOR_PINK);
+        glm::vec3 a,b;
+        a = glm::normalize(this->part2.position - this->part1.position);
+        b.x = a.x*(0.01f);
+        b.y = a.y*(0.01f);
+        b.z = a.z*(0.01f);
+        temp.velocityh = b;
+        temp.velocityv = -0.005f;
+        temp.b = Ball(this->position.x,this->position.y-1,this->position.z+5.5f,0.2f,COLOR_PINK);
         this->bombs.push_back(temp);
     }
 

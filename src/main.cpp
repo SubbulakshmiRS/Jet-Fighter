@@ -50,9 +50,9 @@ void set_position(glm::vec3 v)
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        plane.shoot(2);
+        plane.shoot(1);
     else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-        cout<<"right clicked\n";
+        plane.shoot(2);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -151,11 +151,11 @@ void draw() {
     ball2.draw(VP);*/
     plane.draw(VP);
     background.draw(VP);
-    parachute.draw(VP);
+    //parachute.draw(VP);
     fuel.draw(VP_dummy);
     //sm.draw(VP_dummy);
     arrow.draw(VP,glm::vec3(1,0,1));
-    checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
+    //checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
    //sphere.draw(VP);
@@ -172,6 +172,8 @@ void tick_input(GLFWwindow *window) {
     int d = glfwGetKey(window, GLFW_KEY_D);
     int f = glfwGetKey(window, GLFW_KEY_F) , e = glfwGetKey(window, GLFW_KEY_E);
     int create = glfwGetKey(window, GLFW_KEY_C);
+
+    int b = glfwGetKey(window, GLFW_KEY_B) , m = glfwGetKey(window, GLFW_KEY_M); // bomb and missle , temporary 
 
     int up  = glfwGetKey(window, GLFW_KEY_UP);
     int down = glfwGetKey(window, GLFW_KEY_DOWN);
@@ -205,22 +207,12 @@ void tick_input(GLFWwindow *window) {
     if(up)
     {
         glm::vec3 v = glm::vec3(0,0.1f,0);
-        set_position(v);
-        /*plane.position.y += 0.1f;
-        plane.part1.position.y += 0.1f;
-        plane.part2.position.y += 0.1f; 
-        plane.part3.position.y += 0.1f;
-        plane.part4.position.y += 0.1f;*/       
+        set_position(v);    
     }
     if(down)
     {
         glm::vec3 v = glm::vec3(0,-0.1f,0);
         set_position(v);
-        /*plane.position.y -= 0.1f;
-        plane.part1.position.y -= 0.1f;
-        plane.part2.position.y -= 0.1f;
-        plane.part3.position.y -= 0.1f;
-        plane.part4.position.y -= 0.1f; */ 
     }
     if(forward)
     {
@@ -234,7 +226,6 @@ void tick_input(GLFWwindow *window) {
         plane.speed_y += (float)((v.y)/1000);
         plane.speed_z += (float)((v.z)/1000);
         }
-
     }
     if(create)
     {
@@ -246,54 +237,11 @@ void tick_input(GLFWwindow *window) {
         }
     }
 
-    
-    /*else if(left)
-    {
-        pressl++;
-        if (pressl == 6)
-        {
-        cout<<"left clicked\n";
-        plane.shoot(1);
-        pressl = 0;
-        }
-    }
-    else if(right)
-    {
-        cout<<"rightt clicked\n";
-        pressr++;
-        if (pressr == 6)
-        {
-        cout<<"right clicked\n";
+    if(b)
         plane.shoot(2);
-        pressr = 0;
-        }      
-    }*/
+    if(m)
+        plane.shoot(1);
 
-
-    /*if (f){ // first person 
-        t=0;
-        theta =0;
-        phi = 0;
-    }
-
-    //all remaining are at an angle above the 2 sqaures 
-    if (left) {
-        t=1;
-        phi += 0.05;
-    }
-    else if(right){
-        //cout<<"right";
-        t=1;
-        phi -= 0.05;
-    }
-    else if(up){
-        t=1;
-        theta += 0.05;
-    }
-    else if(down){
-        t=1;
-        theta -= 0.05;
-    }*/
 }
 
 void tick_elements() {
