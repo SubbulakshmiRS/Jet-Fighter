@@ -17,6 +17,7 @@ const color_t COLOR_SMOKE = { 64, 64, 64 };
 const color_t COLOR_DARK_GREEN = { 30, 132, 73 };
 const color_t COLOR_BROWN = {  160, 64, 0  };
 const color_t COLOR_MAROON = { 153, 0, 51 };
+const color_t COLOR_GOLD = { 255, 153, 0 };
 
 
 

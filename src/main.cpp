@@ -23,8 +23,7 @@ int type;
 double add_x,add_y,add_z;
 int t;
 float theta,phi;
-Ball ball1;
-Ball ball2;
+
 int stop;
 Plane plane;
 Background background;
@@ -36,6 +35,7 @@ int checknum;
 Fuel fuel ;
 std::vector<Parachute> parachute;
 int parachute_num;
+Compass compass;
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -156,9 +156,10 @@ void draw() {
     {
         it->draw(VP);
     }
-    fuel.draw(VP_dummy);
+    //fuel.draw(VP_dummy);
     checkpoint.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     
+    compass.draw(VP_dummy);
     arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
     dashboard.draw(VP_dummy); 
     ring.draw(VP);
@@ -251,6 +252,15 @@ void tick_elements() {
     ring.tick();
     plane.tick();
     
+    glm::vec3 one = plane.part2.position - plane.part1.position;
+    one.y = 0;
+    glm::vec3 two = glm::vec3(0,0,1);
+    one = glm::normalize(one);
+    two = glm::normalize(two);
+    float angle_rot = glm::acos(glm::dot(one, two));
+    angle_rot *= (57.32);
+    compass.rotation = angle_rot;
+
     fuel.length = (float) ((plane.fuel/500)*7.75f);
     fuel.tick();
 
@@ -382,13 +392,12 @@ void tick_elements() {
 
 void initGL(GLFWwindow *window, int width, int height) {
 
-    ball1       = Ball(-0.5f, 0,0,0.5f, COLOR_RED);
-    ball2       = Ball(0, 0, 10,0.5f,COLOR_GREEN);
     plane = Plane(0,0,0);
     background = Background(1);
     dashboard = Dashboard(1);
     arrow = Arrow(1);
     checkpoint = Checkpoint(-5,5);
+    compass = Compass(1);
 
     glm::vec3 v = plane.part2.position - plane.part1.position;
     v=  glm::normalize(v);
