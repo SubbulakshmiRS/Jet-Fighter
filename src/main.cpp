@@ -29,7 +29,6 @@ int stop;
 Plane plane;
 Background background;
 Dashboard dashboard;
-//Semi sm;
 Ring ring;
 Arrow arrow ;
 Checkpoint checkpoint;
@@ -101,7 +100,6 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 
     cur_x_pos = xpos;
     cur_y_pos = ypos;
-    //cout<<xpos<<" : "<<ypos<<"\n";
 
 }  
 
@@ -119,8 +117,6 @@ void delete_element_parachute(glm::vec3 p ){
     }
 }
 
-/* Render the scene with openGL */
-/* Edit this function according to your assignment */
 void draw() {
     int views[7][3][3] = {
         {{0,0,7},{0,0,10},{0,1,0}}, // plane view
@@ -131,11 +127,8 @@ void draw() {
         {{0,0,5},{0,0,0},{0,1,0}},
         {{0,0,0},{0,0,5.5f},{0,1,0}} // back view
     };
-    // clear the color and depth in the frame buffer
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // use the loaded shader program
-    // Don't change unless you know what you are doing
     glUseProgram (programID);
 
     // Eye - Location of camera. Don't change unless you are sure!!
@@ -164,13 +157,11 @@ void draw() {
         it->draw(VP);
     }
     fuel.draw(VP_dummy);
-    //sm.draw(VP_dummy);
     checkpoint.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     
     arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
-    dashboard.draw(VP_dummy); // dashboard not viewable 
+    dashboard.draw(VP_dummy); 
     ring.draw(VP);
-   //sphere.draw(VP);
 }
 
 void tick_input(GLFWwindow *window) {
@@ -302,7 +293,6 @@ void tick_elements() {
     // for no flying zone recognition;
     for (std::vector<Island>::iterator it = background.islands.begin() ; it != background.islands.end(); ++it)
     {
-        //std::cout<<i;
         if (it->present)
         {
             float d1 = fabs(it->position.x-plane.position.x) , d2 = fabs(it->position.z-(plane.position.z+5.5));
@@ -337,22 +327,57 @@ void tick_elements() {
         plane.fuel += 5;
     }
 
-    //cout<<"tick";
-    //ball1.tick(stop*(-1));
-    //ball2.tick(stop*1);
-   /* bounding_box_t b1,b2;
-    b1.x = ball1.position.x;
-    b2.x = ball2.position.x;
-    b1.y = ball1.position.y;
-    b2.y = ball2.position.y;
-    b1.width = b2.width = 0.5;
-    b1.height = b2.height = 0.5;
-    if (detect_collision(b1,b2))
+    std::vector<Bullet>::iterator it;
+    for (it=plane.bullets.begin(); it<(plane.bullets.end()); it++)
     {
-        //stop = 0; // to stop when once collided 
-         stop = -1; // to return in the opposite directions 
-    }*/
-    // camera_rotation_angle += 1;
+        bounding_box_t b;
+        b.x=it->b.position.x;
+        b.y=it->b.position.y;
+        b.z=it->b.position.z;
+        b.width = b.height = b.depth = 0.2f;
+        for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+        {
+            bounding_box_t p1,p2;
+            p1.x = it->balloon.position.x;
+            p1.y = it->balloon.position.y;
+            p1.z = it->balloon.position.z;
+            p1.width = p1.height = p1.depth = 3.0f;
+
+            p2.x = it->box.position.x;
+            p2.y = it->box.position.y;
+            p2.z = it->box.position.z;
+            p2.width = p2.height = p2.depth = 1.0f;
+
+            if(detect_collision(b,p1) || detect_collision(b,p2))
+                cout<<"Parachute hit\n";
+        } 
+    }
+    std::vector<Bomb>::iterator it2;
+    for (it2=plane.bombs.begin(); it2<(plane.bombs.end()); it2++)
+    {
+        bounding_box_t b;
+        b.x=it2->b.position.x;
+        b.y=it2->b.position.y;
+        b.z=it2->b.position.z;
+        b.width = b.height = b.depth = 0.4f;
+        for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+        {
+            bounding_box_t p1,p2;
+            p1.x = it->balloon.position.x;
+            p1.y = it->balloon.position.y;
+            p1.z = it->balloon.position.z;
+            p1.width = p1.height = p1.depth = 3.0f;
+
+            p2.x = it->box.position.x;
+            p2.y = it->box.position.y;
+            p2.z = it->box.position.z;
+            p2.width = p2.height = p2.depth = 1.0f;
+
+            if(detect_collision(b,p1) || detect_collision(b,p2))
+                cout<<"Parachute hit\n";
+        } 
+    }
+
 }
 
 void initGL(GLFWwindow *window, int width, int height) {
@@ -364,15 +389,11 @@ void initGL(GLFWwindow *window, int width, int height) {
     dashboard = Dashboard(1);
     arrow = Arrow(1);
     checkpoint = Checkpoint(-5,5);
-    fuel = Fuel(1);
-    //sphere = Sphere(0,0,10,COLOR_GREEN,1.0f);
 
-    //sm = Semi(0,0,0,COLOR_DEAD_BLACK,1.0f,10);
     glm::vec3 v = plane.part2.position - plane.part1.position;
     v=  glm::normalize(v);
     v+= plane.position;
     v.z += 10.0f;
-    //cout<<"v.x "<<v.x<<"v.y "<<v.y<<"v.z "<<v.z<<"\n";
     ring = Ring(v.x,v.y,v.z,v);
 
     // Create and compile our GLSL program from the shaders
@@ -440,7 +461,8 @@ int main(int argc, char **argv) {
 
 bool detect_collision(bounding_box_t a, bounding_box_t b) {
     return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
-           (abs(a.y - b.y) * 2 < (a.height + b.height));
+           (abs(a.y - b.y) * 2 < (a.height + b.height)) &&
+           (abs(a.z - b.z) * 2 < (a.depth + b.depth));
 }
 
 void reset_screen() {
