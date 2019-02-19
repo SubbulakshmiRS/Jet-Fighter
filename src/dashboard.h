@@ -5,6 +5,20 @@
 #define DASHBOARD_H
 
 
+class Fuel {
+public:
+    Fuel() {}
+    Fuel(int scene);
+    glm::vec3 position;
+    float rotation;
+    void draw(glm::mat4 VP);
+    void set_position(float x, float y,float z);
+    void tick(int type);
+    int move(float x , float y,float z);
+private:
+    VAO *object;
+};
+
 class Dashboard :public Semi {
 public:
     Dashboard() {}

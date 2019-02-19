@@ -16,6 +16,8 @@ const color_t COLOR_SEA_BLUE = { 102, 153, 255 };
 const color_t COLOR_SMOKE = { 64, 64, 64 };
 const color_t COLOR_DARK_GREEN = { 30, 132, 73 };
 const color_t COLOR_BROWN = {  160, 64, 0  };
+const color_t COLOR_MAROON = { 153, 0, 51 };
+
 
 
 
