@@ -49,8 +49,8 @@ void Ring::draw(glm::mat4 VP) {
     draw3DObject(this->object);
 }
 
-void Ring::set_position(float x, float y,float z) {
-    this->position = glm::vec3(x, y, z);
+void Ring::set_position(glm::vec3 v) {
+    this->position -= v;
 }
 
 void Ring::tick() {

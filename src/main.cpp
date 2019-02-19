@@ -51,6 +51,7 @@ void set_position(glm::vec3 v)
         it->set_position(v);
     }
     checkpoint.set_position(v);
+    ring.set_position(v);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -168,7 +169,7 @@ void draw() {
     
     arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
     dashboard.draw(VP_dummy); // dashboard not viewable 
-    //ring.draw(VP);
+    ring.draw(VP);
    //sphere.draw(VP);
 }
 
@@ -230,7 +231,7 @@ void tick_input(GLFWwindow *window) {
         pressl++;
         if (pressl == 4)
         {
-        glm::vec3 v = plane.part1.position - plane.part2.position;
+        glm::vec3 v = plane.part2.position - plane.part1.position;
          v=  glm::normalize(v);
         pressl = 0;
         plane.speed_x += (float)((v.x)/500);
@@ -261,6 +262,7 @@ void tick_elements() {
     
     fuel.length = (float) ((plane.fuel/500)*7.75f);
     fuel.tick();
+
     for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
     {
         it->tick();
@@ -311,8 +313,9 @@ void tick_elements() {
         }
     }
 
-    // reaching a checkpoint
-    float d1 = fabs(checkpoint.position.x-plane.position.x) , d2 = fabs(checkpoint.position.z-(plane.position.z+5.5));
+    float d1,d2,d3;
+    // reaching a checkpoint - deactivated for now
+    /*d1 = fabs(checkpoint.position.x-plane.position.x) ; d2 = fabs(checkpoint.position.z-(plane.position.z+5.5));
     if (d1 < 0.3f || d2 < 0.3f )
     {
         checknum++;
@@ -323,8 +326,17 @@ void tick_elements() {
         z += rand()%5 ;
         z += 10;
         checkpoint = Checkpoint(x,z);
-    }
+    }*/
     
+    // entering the ring
+    d3 = fabs(ring.position.z-(plane.position.z+5.75f)) ;
+    d1 = fabs(ring.position.x-plane.position.x) ; d2 = fabs(ring.position.y-(plane.position.y));
+    if(d1 < 0.1f && d2 < 0.1f && d3 < 0.1f)
+    {
+        cout<<"Enters RING\n";
+        plane.fuel += 5;
+    }
+
     //cout<<"tick";
     //ball1.tick(stop*(-1));
     //ball2.tick(stop*1);
