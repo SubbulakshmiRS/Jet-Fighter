@@ -6,6 +6,7 @@ Plane ::Plane(float x, float y,float z) {
     this->position = glm::vec3(x, y, z);
     this->rotate_vec = glm::vec3(1, 0, 0);
     this->rotation = 0;
+    this->fuel = 500;
     this->speed_x=this->speed_y = this->speed_z = 0;
     int n =6;
     float x_pos = 1.0f,y_pos = 0;
@@ -172,6 +173,7 @@ void Plane::set_position(glm::vec3 v) {
 }
 
 void Plane::tick() {
+    this->fuel -= 0.01f;
     /*this->position.y += this->speed_y;
     this->part1.position.y += this->speed_y;
     this->part2.position.y += this->speed_y;

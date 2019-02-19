@@ -164,8 +164,9 @@ void draw() {
     }
     fuel.draw(VP_dummy);
     //sm.draw(VP_dummy);
-    arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
     checkpoint.draw(VP,plane.position+glm::vec3(0,0,5.75f));
+    
+    arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
    //sphere.draw(VP);
@@ -257,6 +258,9 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ring.tick();
     plane.tick();
+    
+    fuel.length = (float) ((plane.fuel/500)*7.75f);
+    fuel.tick();
     for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
     {
         it->tick();
