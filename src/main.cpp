@@ -163,6 +163,7 @@ void draw() {
     arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
     dashboard.draw(VP_dummy); 
     ring.draw(VP);
+    fuel.draw(VP_dummy);
 }
 
 void tick_input(GLFWwindow *window) {
@@ -398,6 +399,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     arrow = Arrow(1);
     checkpoint = Checkpoint(-5,5);
     compass = Compass(1);
+    fuel = Fuel(1);
 
     glm::vec3 v = plane.part2.position - plane.part1.position;
     v=  glm::normalize(v);
@@ -469,7 +471,7 @@ int main(int argc, char **argv) {
 }
 
 bool detect_collision(bounding_box_t a, bounding_box_t b) {
-    return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
+      return (abs(a.x - b.x) * 2 < (a.width + b.width)) &&
            (abs(a.y - b.y) * 2 < (a.height + b.height)) &&
            (abs(a.z - b.z) * 2 < (a.depth + b.depth));
 }
