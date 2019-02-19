@@ -6,6 +6,7 @@
 #include "dashboard.h"
 #include "figure.h"
 #include "bonus.h"
+#include "enemy.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ Dashboard dashboard;
 Ring ring;
 Arrow arrow ;
 Checkpoint checkpt;
+Parachute parachute;
 //Sphere sphere ;
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
@@ -148,6 +150,7 @@ void draw() {
     ball2.draw(VP);*/
     plane.draw(VP);
     background.draw(VP);
+    parachute.draw(VP);
     //sm.draw(VP_dummy);
     arrow.draw(VP,glm::vec3(1,0,1));
     checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
@@ -351,6 +354,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     v.z += 10.0f;
     //cout<<"v.x "<<v.x<<"v.y "<<v.y<<"v.z "<<v.z<<"\n";
     ring = Ring(v.x,v.y,v.z,v);
+    parachute = Parachute(3,5,3);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");

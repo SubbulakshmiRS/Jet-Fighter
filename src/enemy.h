@@ -6,20 +6,33 @@
 #define ENEMY_H
 
 
-class Parachute {
+class Rope {
 public:
-    Parachute() {}
-    Parachute(float x, float y, float z,color_t color,float size,int n,float rotation);
-    glm::vec3 position,rotate_vec;
+    Rope() {}
+    Rope(float x, float y, float z);
+    glm::vec3 position;
     float rotation;
-    float size;
-    void draw(glm::mat4 VP,glm::vec3 rotate_vec);
-    void draw1(glm::mat4 VP,glm::vec3 rotate_vec,glm::mat4 mat);
-    void draw2(glm::mat4 VP,glm::mat4 mat);
+    void draw(glm::mat4 VP);
     void set_position(glm::vec3 v);
     void tick(int type);
     int move(float x , float y,float z);
-    double speed;
+private:
+    VAO *object;
+};
+
+class Parachute {
+public:
+    Parachute() {}
+    Parachute(float x, float y, float z);
+    glm::vec3 position;
+    float rotation;
+    Sphere balloon;
+    Ball box ;
+    Rope rope[4];
+    void draw(glm::mat4 VP);
+    void set_position(glm::vec3 v);
+    void tick(int type);
+    int move(float x , float y,float z);
 private:
     VAO *object;
 };
