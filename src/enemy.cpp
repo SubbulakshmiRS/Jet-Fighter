@@ -4,7 +4,7 @@
 
 Rope ::Rope(float x, float y,float z) {
     this->position = glm::vec3(x, y, z);
-    this->rotation = rotation;
+    this->rotation = 0;
 
     // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -119,7 +119,13 @@ void Parachute::set_position(glm::vec3 v) {
         this->rope[i].set_position(v); 
 }
 
-void Parachute::tick(int type) {
+void Parachute::tick() {
+
+    this->position.y -= 0.005f;
+    this->balloon.position.y -= 0.005f;
+    this->box.position.y -= 0.005f;
+    for(int i=0;i<4;i++)
+        this->rope[i].position.y -= 0.005f;
     // type is to differentiate between the different directions of the 2 balls 
      //this->rotation += type;
      //this->position.x -= type*speed;
@@ -133,4 +139,17 @@ int Parachute::move(float x , float y,float z){
     this->position.z += z;
     // check if the item is within the boundaries of the screen ( += 10 all sides)
     return 0;
+}
+
+Parachute create_parachute(glm::vec3 v) {
+
+    int r[] = {1,-1};
+    int temp = rand()%2; temp = r[temp];
+    Parachute t;
+    float x = v.x+2.0f+(rand()%10-4),y=7+(rand()%5),z=v.z+(rand()%10-2)+10;
+    x *= temp;
+    temp = rand()%2; temp = r[temp];
+    z *= temp;
+    t = Parachute(x,y,z);
+    return t;
 }

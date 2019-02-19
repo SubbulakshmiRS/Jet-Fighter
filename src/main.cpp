@@ -33,9 +33,9 @@ Dashboard dashboard;
 Ring ring;
 Arrow arrow ;
 Checkpoint checkpt;
-Parachute parachute;
 Fuel fuel ;
-//Sphere sphere ;
+std::vector<Parachute> parachute;
+int parachute_num;
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -45,6 +45,10 @@ Timer t60(1.0 / 60);
 void set_position(glm::vec3 v)
 {
     background.set_position(v);
+    for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+    {
+        it->set_position(v);
+    }
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -98,6 +102,20 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 
 }  
 
+void delete_element_parachute(glm::vec3 p ){
+    if(parachute_num <= 0)
+        return ;
+    for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+    {
+        if (it->position.y <= -15)
+        {
+            parachute.erase(it);
+            parachute_num--;
+            std::cout<<"deleted \n";
+        }
+    }
+}
+
 /* Render the scene with openGL */
 /* Edit this function according to your assignment */
 void draw() {
@@ -138,10 +156,13 @@ void draw() {
 
     plane.draw(VP);
     background.draw(VP);
-    //parachute.draw(VP);
+    for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+    {
+        it->draw(VP);
+    }
     fuel.draw(VP_dummy);
     //sm.draw(VP_dummy);
-    arrow.draw(VP,glm::vec3(1,0,1));
+    //arrow.draw(VP,glm::vec3(1,0,1));
     //checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
@@ -234,6 +255,11 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ring.tick();
     plane.tick();
+    for (std::vector<Parachute>::iterator it = parachute.begin() ; it < parachute.end(); ++it)
+    {
+        it->tick();
+    }
+
     glm::vec3 v = glm::vec3(plane.speed_x,plane.speed_y,plane.speed_z);
     set_position(v);
 
@@ -250,6 +276,18 @@ void tick_elements() {
         {
             glm::vec3 v = plane.part1.position - plane.part2.position;
             background.create(plane.position + v);
+        }
+    }
+
+    delete_element_parachute(plane.position);
+    if(parachute_num < 3)
+    {
+        while(parachute_num<3)
+        {
+            glm::vec3 v = plane.part1.position - plane.part2.position;
+            Parachute t = create_parachute(plane.position + v);
+            parachute.push_back(t);
+            parachute_num++;
         }
     }
 
@@ -304,7 +342,6 @@ void initGL(GLFWwindow *window, int width, int height) {
     v.z += 10.0f;
     //cout<<"v.x "<<v.x<<"v.y "<<v.y<<"v.z "<<v.z<<"\n";
     ring = Ring(v.x,v.y,v.z,v);
-    parachute = Parachute(3,5,3);
 
     // Create and compile our GLSL program from the shaders
     programID = LoadShaders("Sample_GL.vert", "Sample_GL.frag");
@@ -329,6 +366,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    parachute_num = 0;
     pressl = pressr = 0;
     cur_x_pos = cur_y_pos = -1;
     add_x = add_y = add_z = 0;

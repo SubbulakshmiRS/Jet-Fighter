@@ -5,7 +5,6 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-
 class Rope {
 public:
     Rope() {}
@@ -31,10 +30,12 @@ public:
     Rope rope[4];
     void draw(glm::mat4 VP);
     void set_position(glm::vec3 v);
-    void tick(int type);
+    void tick();
     int move(float x , float y,float z);
 private:
     VAO *object;
 };
+
+Parachute create_parachute(glm::vec3 v);
 
 #endif // ENEMY_H

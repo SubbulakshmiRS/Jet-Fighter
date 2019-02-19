@@ -27,6 +27,7 @@ void Sphere::draw(glm::mat4 VP) {
         this->part[i].position = this->position;
         this->part[i].draw(VP,glm::vec3(0,1,0));
     }
+    this->part[50].position = this->position;
     this->part[50].draw(VP,glm::vec3(1,0,0));
 }
 
