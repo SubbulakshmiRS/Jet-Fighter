@@ -54,8 +54,8 @@ private:
 class Arrow {
 public:
     Arrow() {}
-    Arrow(float x, float y, float Z);
-    glm::vec3 position;
+    Arrow(int scene);
+    glm::vec3 position,current_align;
     glm::vec3 align ;
     float rotation;
     void draw(glm::mat4 VP,glm::vec3 p);
@@ -69,7 +69,7 @@ private:
 class Checkpoint {
 public:
     Checkpoint() {}
-    Checkpoint(float x, float y, float z);
+    Checkpoint(float x,float z);
     glm::vec3 position;
     glm::vec3 align ;
     Ball platform ;

@@ -228,79 +228,80 @@ void Volcano::tick(int type) {
     //this->position.y -= type*speed;
 }
 
-Arrow ::Arrow(float x, float y,float z) {
-    this->position = glm::vec3(1,1,1);
+Arrow ::Arrow(int scene) {
+    this->position = glm::vec3(5,5,0);
     this->rotation = 0;
     this->align = glm::vec3(0,0,1);
+    this->current_align = this->align;
     GLfloat vertex_buffer_data[] = {
-        0.65f,0.2f,0,
-        0,0.2f,0.65f,
-        -0.65f,0.2f,0,
-        0.15f,0.2f,0,
-        -0.15f,0.2f,0,
-        0.15f,0.2f,-1,
-        -0.15f,0.2f,0,
-        -0.15f,0.2f,-1,
-        0.15f,0.2f,-1, // top half 
+        1.0f,0.2f,0,
+        0,0.2f,1.0f,
+        -1.0f,0.2f,0,
+        0.3f,0.2f,0,
+        -0.3f,0.2f,0,
+        0.3f,0.2f,-1.5f,
+        -0.3f,0.2f,0,
+        -0.3f,0.2f,-1.5f,
+        0.3f,0.2f,-1.5f, // top half 
 
-       0.65f,-0.2f,0,
-        0,-0.2f,0.65f,
-        -0.65f,-0.2f,0,
-        0.15f,-0.2f,0,
-        -0.15f,-0.2f,0,
-        0.15f,-0.2f,-1,
-        -0.15f,-0.2f,0,
-        -0.15f,-0.2f,-1,
-        0.15f,-0.2f,-1, // bottom half
+       1.0f,-0.2f,0,
+        0,-0.2f,1.5f,
+        -1.0f,-0.2f,0,
+        0.3f,-0.2f,0,
+        -0.3f,-0.2f,0,
+        0.3f,-0.2f,-1.5f,
+        -0.3f,-0.2f,0,
+        -0.3f,-0.2f,-1.5f,
+        0.3f,-0.2f,-1.5f, // bottom half
 
-        -0.15f,0.2f,-1,
-        -0.15f,-0.2f,-1,
-        0.15f,-0.2f,-1,
-        -0.15f,0.2f,-1,
-        0.15f,-0.2f,-1,
-        0.15f,0.2f,-1, // rect 1
+        -0.3f,0.2f,-1.5f,
+        -0.3f,-0.2f,-1.5f,
+        0.3f,-0.2f,-1.5f,
+        -0.3f,0.2f,-1.5f,
+        0.3f,-0.2f,-1.5f,
+        0.3f,0.2f,-1.5f, // rect 1
 
-        0.15f,0.2f,-1,
-        0.15f,-0.2f,-1,
-        0.15f,-0.2f,0,
-        0.15f,0.2f,-1,
-        0.15f,-0.2f,0,
-        0.15f,0.2f,0, //rect 2
+        0.3f,0.2f,-1.5f,
+        0.3f,-0.2f,-1.5f,
+        0.3f,-0.2f,0,
+        0.3f,0.2f,-1.5f,
+        0.3f,-0.2f,0,
+        0.3f,0.2f,0, //rect 2
 
-        -0.15f,0.2f,-1,
-        -0.15f,-0.2f,-1,
-        -0.15f,-0.2f,0,
-        -0.15f,0.2f,-1,
-        -0.15f,-0.2f,0,
-        -0.15f,0.2f,0, // rect 7
+        -0.3f,0.2f,-1.5f,
+        -0.3f,-0.2f,-1.5f,
+        -0.3f,-0.2f,0,
+        -0.3f,0.2f,-1.5f,
+        -0.3f,-0.2f,0,
+        -0.3f,0.2f,0, // rect 7
 
-        0.15f,0.2f,0,
-        0.15f,-0.2f,0,
-        0.65f,-0.2f,0,
-        0.15f,0.2f,0,
-        0.65f,-0.2f,0,
-        0.65f,0.2f,0, // rect 3
+        0.3f,0.2f,0,
+        0.3f,-0.2f,0,
+        1.0f,-0.2f,0,
+        0.3f,0.2f,0,
+        1.0f,-0.2f,0,
+        1.0f,0.2f,0, // rect 3
 
-        -0.15f,0.2f,0,
-        -0.15f,-0.2f,0,
-        -0.65f,-0.2f,0,
-        -0.15f,0.2f,0,
-        -0.65f,-0.2f,0,
-        -0.65f,0.2f,0,  // rect 6
+        -0.3f,0.2f,0,
+        -0.3f,-0.2f,0,
+        -1.0f,-0.2f,0,
+        -0.3f,0.2f,0,
+        -1.0f,-0.2f,0,
+        -1.0f,0.2f,0,  // rect 6
 
-        0.65f,0.2f,0,
-        0.65f,-0.2f,0,
-        0,-0.2f,0.65f,
-        0.65f,0.2f,0,
-        0,-0.2f,0.65f,
-        0,0.2f,0.65f, // rect 4
+        1.0f,0.2f,0,
+        1.0f,-0.2f,0,
+        0,-0.2f,1.0f,
+        1.0f,0.2f,0,
+        0,-0.2f,1.0f,
+        0,0.2f,1.0f, // rect 4
 
-        0,0.2f,0.65f,
-        0,-0.2f,0.65f,
-        -0.65f,-0.2f,0,
-        0,0.2f,0.65f,
-        -0.65f,-0.2f,0,
-        -0.65f,0.2f,0, // rect 5 
+        0,0.2f,1.0f,
+        0,-0.2f,1.0f,
+        -1.0f,-0.2f,0,
+        0,0.2f,1.0f,
+        -1.0f,-0.2f,0,
+        -1.0f,0.2f,0, // rect 5 
 
     };
     int s = sizeof(vertex_buffer_data)/sizeof(vertex_buffer_data[0]);
@@ -309,9 +310,8 @@ Arrow ::Arrow(float x, float y,float z) {
     this->object = create3DObject(GL_TRIANGLES, s, vertex_buffer_data, COLOR_RED, GL_FILL);
 }
 
-void Arrow::draw(glm::mat4 VP,glm::vec3 p) {
+void Arrow::draw(glm::mat4 VP,glm::vec3 direction) {
     //p is the checkpoint 
-    glm::vec3 direction = p - this->position ;
     glm::vec3 v = cross_product(this->align,direction);
     float s = magnitude(v);
     float c = dot_product(this->align,direction);
@@ -331,13 +331,11 @@ void Arrow::draw(glm::mat4 VP,glm::vec3 p) {
 
     Matrices.model = glm::mat4(0.5f);
     glm::mat4 translate = glm::translate (this->position);    // glTranslatef
-    glm::mat4 rotate    = glm::rotate((float) (this->rotation * M_PI / 180.0f), glm::vec3(0, 0, 1));
-    // No need as coords centered at 0, 0, 0 of cube arouund which we waant to rotate
-    // rotate          = rotate * glm::translate(glm::vec3(0, -0.6, 0));
     Matrices.model *= (translate * result);
     glm::mat4 MVP = VP * Matrices.model;
     glUniformMatrix4fv(Matrices.MatrixID, 1, GL_FALSE, &MVP[0][0]);
     draw3DObject(this->object);
+    this->current_align = direction;
 }
 
 void Arrow::set_position(glm::vec3 v) {
@@ -351,8 +349,8 @@ void Arrow::tick(int type) {
     //this->position.y -= type*speed;
 }
 
-Checkpoint ::Checkpoint(float x, float y,float z) {
-    this->position = glm::vec3(5, -7, 1);
+Checkpoint ::Checkpoint(float x,float z) {
+    this->position = glm::vec3(x, -7, z);
     this->rotation = 0;
     this->align = glm::vec3(0,1,0);
        // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.

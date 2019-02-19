@@ -32,7 +32,8 @@ Dashboard dashboard;
 //Semi sm;
 Ring ring;
 Arrow arrow ;
-Checkpoint checkpt;
+Checkpoint checkpoint;
+int checknum;
 Fuel fuel ;
 std::vector<Parachute> parachute;
 int parachute_num;
@@ -49,6 +50,7 @@ void set_position(glm::vec3 v)
     {
         it->set_position(v);
     }
+    checkpoint.set_position(v);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -162,8 +164,8 @@ void draw() {
     }
     fuel.draw(VP_dummy);
     //sm.draw(VP_dummy);
-    //arrow.draw(VP,glm::vec3(1,0,1));
-    //checkpt.draw(VP,plane.position+glm::vec3(0,0,5.75f));
+    arrow.draw(VP_dummy,checkpoint.position - (plane.position + glm::vec3(0,0,5.75f)));
+    checkpoint.draw(VP,plane.position+glm::vec3(0,0,5.75f));
     dashboard.draw(VP_dummy); // dashboard not viewable 
     //ring.draw(VP);
    //sphere.draw(VP);
@@ -227,7 +229,7 @@ void tick_input(GLFWwindow *window) {
         pressl++;
         if (pressl == 4)
         {
-        glm::vec3 v = plane.part2.position - plane.part1.position;
+        glm::vec3 v = plane.part1.position - plane.part2.position;
          v=  glm::normalize(v);
         pressl = 0;
         plane.speed_x += (float)((v.x)/500);
@@ -303,8 +305,22 @@ void tick_elements() {
                 cout<<"no flying zone";
             }
         }
-
     }
+
+    // reaching a checkpoint
+    float d1 = fabs(checkpoint.position.x-plane.position.x) , d2 = fabs(checkpoint.position.z-(plane.position.z+5.5));
+    if (d1 < 0.3f || d2 < 0.3f )
+    {
+        checknum++;
+        cout<<"\nCHECKPOINT REACHED\t"<<checknum<<"\n";
+        sleep(10);
+        float x = checkpoint.position.x,z=checkpoint.position.z;
+        x -= rand()%5 + 10;
+        z += rand()%5 ;
+        z += 10;
+        checkpoint = Checkpoint(x,z);
+    }
+    
     //cout<<"tick";
     //ball1.tick(stop*(-1));
     //ball2.tick(stop*1);
@@ -330,8 +346,8 @@ void initGL(GLFWwindow *window, int width, int height) {
     plane = Plane(0,0,0);
     background = Background(1);
     dashboard = Dashboard(1);
-    arrow = Arrow(0,0,0);
-    checkpt = Checkpoint(0,0,0);
+    arrow = Arrow(1);
+    checkpoint = Checkpoint(-5,5);
     fuel = Fuel(1);
     //sphere = Sphere(0,0,10,COLOR_GREEN,1.0f);
 
@@ -366,6 +382,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    checknum = 0;
     parachute_num = 0;
     pressl = pressr = 0;
     cur_x_pos = cur_y_pos = -1;
