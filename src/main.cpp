@@ -122,33 +122,20 @@ void draw() {
     //glm::vec3 eye ( 5*cos(camera_rotation_angle*M_PI/180.0f), 0, 5*sin(camera_rotation_angle*M_PI/180.0f) );
     //glm::vec3 eye ( 3*sin(theta)*cos(phi),3*sin(theta)*sin(phi),3*cos(theta)*t );
     glm::vec3 eye ( views[type][0][0]+add_x,views[type][0][1]+add_y,views[type][0][2]+add_z);
-    // Target - Where is the camera looking at.  Don't change unless you are sure!!
     glm::vec3 target ( views[type][1][0],views[type][1][1],views[type][1][2]);
-    // Up - Up vector defines tilt of camera.  Don't change unless you are sure!!
     glm::vec3 up (views[type][2][0],views[type][2][1],views[type][2][2]);
 
-    // Compute Camera matrix (view)
     Matrices.view = glm::lookAt( eye, target, up ); // Rotating Camera for 3D
-        glm::vec3 eye_dummy ( 0,0,5 );
-        glm::vec3 target_dummy (0, 0, 0);
-        glm::vec3 up_dummy (0, 1, 0);
-        dummy.view = glm::lookAt(eye_dummy,target_dummy,up_dummy);
-        glm::mat4 VP_dummy = Matrices.projection*dummy.view;
-    // Don't change unless you are sure!!
-    // Matrices.view = glm::lookAt(glm::vec3(0, 0, -3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); // Fixed camera for 2D (ortho) in XY plane
+    glm::vec3 eye_dummy ( 0,0,5 );
+    glm::vec3 target_dummy (0, 0, 0);
+    glm::vec3 up_dummy (0, 1, 0);
+    dummy.view = glm::lookAt(eye_dummy,target_dummy,up_dummy);
+    glm::mat4 VP_dummy = Matrices.projection*dummy.view;
 
-    // Compute ViewProject matrix as view/camera might not be changed for this frame (basic scenario)
-    // Don't change unless you are sure!!
     glm::mat4 VP = Matrices.projection * Matrices.view;
 
-    // Send our transformation to the currently bound shader, in the "MVP" uniform
-    // For each model you render, since the MVP will be different (at least the M part)
-    // Don't change unless you are sure!!
     glm::mat4 MVP;  // MVP = Projection * View * Model
 
-    // Scene render
-    /*ball1.draw(VP);
-    ball2.draw(VP);*/
     plane.draw(VP);
     background.draw(VP);
     //parachute.draw(VP);
@@ -222,9 +209,9 @@ void tick_input(GLFWwindow *window) {
         glm::vec3 v = plane.part2.position - plane.part1.position;
          v=  glm::normalize(v);
         pressl = 0;
-        plane.speed_x += (float)((v.x)/1000);
-        plane.speed_y += (float)((v.y)/1000);
-        plane.speed_z += (float)((v.z)/1000);
+        plane.speed_x += (float)((v.x)/500);
+        plane.speed_y += (float)((v.y)/500);
+        plane.speed_z += (float)((v.z)/500);
         }
     }
     if(create)
@@ -257,12 +244,28 @@ void tick_elements() {
 
     background.delete_element(plane.position);
     
-    if(background.stat < 4)
+    if(background.stat < 3)
     {
-        while(background.stat<4)
+        while(background.stat<3)
         {
-            background.create(plane.position);
+            glm::vec3 v = plane.part1.position - plane.part2.position;
+            background.create(plane.position + v);
         }
+    }
+
+    // for no flying zone recognition;
+    for (std::vector<Island>::iterator it = background.islands.begin() ; it != background.islands.end(); ++it)
+    {
+        //std::cout<<i;
+        if (it->present)
+        {
+            float d1 = fabs(it->position.x-plane.position.x) , d2 = fabs(it->position.z-(plane.position.z+5.5));
+            if (d1 < 0.3f || d2 < 0.3f )
+            {
+                cout<<"no flying zone";
+            }
+        }
+
     }
     //cout<<"tick";
     //ball1.tick(stop*(-1));
@@ -282,11 +285,7 @@ void tick_elements() {
     // camera_rotation_angle += 1;
 }
 
-/* Initialize the OpenGL rendering properties */
-/* Add all the models to be created here */
 void initGL(GLFWwindow *window, int width, int height) {
-    /* Objects should be created before any other gl function and shaders */
-    // Create the models
 
     ball1       = Ball(-0.5f, 0,0,0.5f, COLOR_RED);
     ball2       = Ball(0, 0, 10,0.5f,COLOR_GREEN);

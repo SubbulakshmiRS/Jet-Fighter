@@ -103,7 +103,7 @@ void Background::create(glm::vec3 v) {
     int temp = rand()%2; temp = r[temp];
     Island t ;
     t.present = rand()%2;
-    float x = v.x+2.0f+(rand()%10-4),y=this->position.y-0.25f,z=v.z+(rand()%10-2)+10;
+    float x = v.x+2.0f+(rand()%10-4),y=this->position.y-0.29f,z=v.z+(rand()%10-2)+10;
     double step = (rand()%100);
     step = step/100;
     t.part1 = Ball(x+step,y+step,z+step,0.5,COLOR_BRIGHT_GREEN);
@@ -126,7 +126,9 @@ void Background::create(glm::vec3 v) {
 
 void Background::delete_element(glm::vec3 p ){
     int i=0;
-    for (std::vector<Island>::iterator it = this->islands.begin() ; it != this->islands.end(); ++it)
+    if(this->stat <= 0)
+        return ;
+    for (std::vector<Island>::iterator it = this->islands.begin() ; it < this->islands.end(); ++it)
     {
         //std::cout<<i;
         float d1 = fabs(it->position.x-p.x) , d2 = fabs(it->position.z-p.z);
