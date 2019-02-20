@@ -308,6 +308,7 @@ void tick_elements() {
             if (d1 < 0.3f || d2 < 0.3f )
             {
                 cout<<"no flying zone";
+                plane.fuel -= 0.005f;
             }
         }
     }
@@ -324,6 +325,8 @@ void tick_elements() {
         {
             checknum++;
             cout<<"\nCHECKPOINT REACHED\t"<<checknum<<"\n";
+            plane.points += 10;
+            cout<<"PLANE DETAILS:\n FUEL :"<<plane.fuel<<"  POINTS :"<<plane.points<<"\n";
             sleep(10);
             float x = checkpoint.position.x,z=checkpoint.position.z;
             x -= rand()%5 + 10;
@@ -367,7 +370,10 @@ void tick_elements() {
             p2.width = p2.height = p2.depth = 1.0f;
 
             if(detect_collision(b,p1) || detect_collision(b,p2))
+            {
                 cout<<"Parachute hit\n";
+                plane.points += 0.05f;
+            }
         } 
     }
     std::vector<Bomb>::iterator it2;
@@ -392,7 +398,10 @@ void tick_elements() {
             p2.width = p2.height = p2.depth = 1.0f;
 
             if(detect_collision(b,p1) || detect_collision(b,p2))
+            {
                 cout<<"Parachute hit\n";
+                plane.points += 0.05f;
+            }
         } 
     }
 
