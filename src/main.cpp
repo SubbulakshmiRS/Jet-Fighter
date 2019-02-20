@@ -31,11 +31,13 @@ Dashboard dashboard;
 Ring ring;
 Arrow arrow ;
 Checkpoint checkpoint;
+int time_fire;
 int checknum;
 Fuel fuel ;
 std::vector<Parachute> parachute;
 int parachute_num;
 Compass compass;
+
 
 float screen_zoom = 0.5, screen_center_x = 0, screen_center_y = 0;
 float camera_rotation_angle = 0;
@@ -234,12 +236,7 @@ void tick_input(GLFWwindow *window) {
     }
     if(create)
     {
-        pressr++;
-        if(pressr == 5)
-        {
-        background.create(plane.position);
-        pressr = 0;
-        }
+        checkpoint.shoot();
     }
 
     if(b)
@@ -252,6 +249,7 @@ void tick_input(GLFWwindow *window) {
 void tick_elements() {
     ring.tick();
     plane.tick();
+    checkpoint.tick();
     
     glm::vec3 one = plane.part2.position - plane.part1.position;
     one.y = 0;
@@ -316,18 +314,27 @@ void tick_elements() {
 
     float d1,d2,d3;
     // reaching a checkpoint - deactivated for now
-    /*d1 = fabs(checkpoint.position.x-plane.position.x) ; d2 = fabs(checkpoint.position.z-(plane.position.z+5.5));
-    if (d1 < 0.3f || d2 < 0.3f )
+    d1 = fabs(checkpoint.position.x-plane.position.x) ; d2 = fabs(checkpoint.position.z-(plane.position.z+5.5));
+    if(d1<0.5f || d2<0.5f)
     {
-        checknum++;
-        cout<<"\nCHECKPOINT REACHED\t"<<checknum<<"\n";
-        sleep(10);
-        float x = checkpoint.position.x,z=checkpoint.position.z;
-        x -= rand()%5 + 10;
-        z += rand()%5 ;
-        z += 10;
-        checkpoint = Checkpoint(x,z);
-    }*/
+        time_fire++;
+        if(time_fire<20)
+            checkpoint.shoot();
+        if (d1 < 0.3f || d2 < 0.3f )
+        {
+            checknum++;
+            cout<<"\nCHECKPOINT REACHED\t"<<checknum<<"\n";
+            sleep(10);
+            float x = checkpoint.position.x,z=checkpoint.position.z;
+            x -= rand()%5 + 10;
+            z += rand()%5 ;
+            z += 10;
+            checkpoint = Checkpoint(x,z);
+        }
+    }
+    else 
+        time_fire = 0;
+
     
     // entering the ring
     d3 = fabs(ring.position.z-(plane.position.z+5.75f)) ;
@@ -389,6 +396,28 @@ void tick_elements() {
         } 
     }
 
+    // when near checkpoint , cannon is fired
+    std::vector<Cannon>::iterator it3;
+    for (it3=checkpoint.cannons.begin(); it3<(checkpoint.cannons.end()); it3++)
+    {
+        bounding_box_t b;
+        b.x=it3->b.position.x;
+        b.y=it3->b.position.y;
+        b.z=it3->b.position.z;
+        b.width = b.height = b.depth = 0.2f;
+
+        bounding_box_t p;
+        p.x=plane.position.x;
+        p.y = plane.position.y;
+        p.z = plane.position.z+5.75f;
+        p.width = 1.2f;
+        p.height = 2.0f;
+        p.depth = 1.5f;
+
+        if(detect_collision(b,p))
+            cout<<"Plane hit by cannon\n";
+    }
+
 }
 
 void initGL(GLFWwindow *window, int width, int height) {
@@ -430,6 +459,7 @@ void initGL(GLFWwindow *window, int width, int height) {
 
 
 int main(int argc, char **argv) {
+    time_fire = 0;
     checknum = 0;
     parachute_num = 0;
     pressl = pressr = 0;

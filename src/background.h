@@ -6,6 +6,11 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
+struct Cannon{
+    Ball b;
+    glm::vec3 velocity;
+};
+
 glm::vec3 cross_product(glm::vec3 a,glm::vec3 b);
 float dot_product(glm::vec3 a,glm::vec3 b);
 float magnitude(glm::vec3 a);
@@ -72,15 +77,17 @@ public:
     Checkpoint(float x,float z);
     glm::vec3 position;
     glm::vec3 align ;
+    glm::vec3 cur_align;
     Ball platform ;
     Sphere part1;
     float top , bottom , height ;
     float rotation;
+    std::vector <Cannon> cannons;
     void draw(glm::mat4 VP,glm::vec3 p);
     void set_position(glm::vec3 v);
-    void tick(int type);
+    void tick();
     int move(float x , float y,float z);
-    double speed;
+    void shoot();
 private:
     VAO *object;
 };

@@ -353,6 +353,7 @@ Checkpoint ::Checkpoint(float x,float z) {
     this->position = glm::vec3(x, -7, z);
     this->rotation = 0;
     this->align = glm::vec3(0,1,0);
+    this->cur_align = this->align;
        // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
     // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
     this->top = 0.5f;
@@ -437,19 +438,32 @@ void Checkpoint::draw(glm::mat4 VP,glm::vec3 p) {
     draw3DObject(this->object);
     this->part1.draw(VP);
     this->platform.draw(VP);
+    this->cur_align = direction;
+    std::vector<Cannon>::iterator it;
+    for (it=this->cannons.begin(); it<(this->cannons.end()); it++)
+    {
+        it->b.draw(VP);
+    }
+
 }
 
 void Checkpoint::set_position(glm::vec3 v) {
     this->position -= v;
     this->platform.set_position(v);
     this->part1.set_position(v);
+    std::vector<Cannon>::iterator it;
+    for (it=this->cannons.begin(); it<(this->cannons.end()); it++)
+    {
+        it->b.set_position(v);
+    }
 }
 
-void Checkpoint::tick(int type) {
-    // type is to differentiate between the different directions of the 2 balls 
-     //this->rotation += type;
-     //this->position.x -= type*speed;
-    //this->position.y -= type*speed;
+void Checkpoint::tick() {
+    std::vector<Cannon>::iterator it;
+    for (it=this->cannons.begin(); it<(this->cannons.end()); it++)
+    {
+        it->b.position += it->velocity;
+    }
 }
 
 int Checkpoint::move(float x , float y,float z){
@@ -459,4 +473,16 @@ int Checkpoint::move(float x , float y,float z){
     this->position.z += z;
     // check if the item is within the boundaries of the screen ( += 10 all sides)
     return 0;
+}
+
+void Checkpoint::shoot()
+{
+    Cannon temp ;
+    glm::vec3 a = glm::normalize(this->cur_align);
+   temp.velocity.x = a.x*(0.015f);
+    temp.velocity.y = a.y*(0.015f);
+    temp.velocity.z = a.z*(0.015f);
+    temp.b = Ball(this->position.x,this->position.y,this->position.z,0.1f,COLOR_DEAD_BLACK);
+    this->cannons.push_back(temp);
+
 }
