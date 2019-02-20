@@ -174,10 +174,13 @@ void Plane::set_position(glm::vec3 v) {
 
 void Plane::tick() {
     this->fuel -= 0.01f;
+    
     /*this->position.y += this->speed_y;
     this->part1.position.y += this->speed_y;
     this->part2.position.y += this->speed_y;
-    this->speed_y -= 0.0005f;*/
+    this->part3.position.y += this->speed_y;
+    this->part4.position.y += this->speed_y;*/
+    this->speed_y -= 0.0001f;
 
     std::vector<Bullet>::iterator it;
     for (it=this->bullets.begin(); it<(this->bullets.end()); it++)

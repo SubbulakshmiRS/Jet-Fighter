@@ -63,7 +63,7 @@ GLFWwindow*initGLFW(int width, int height) {
     glfwSetCharCallback(window, keyboardChar); // simpler specific character handling
 
     /* Register function to handle mouse click */
-    glfwSetMouseButtonCallback(window, mouseButton); // mouse button clicks
+    glfwSetMouseButtonCallback(window, mouse_button_callback); // mouse button clicks
     glfwSetScrollCallback(window, scroll_callback);
 
     return window;

@@ -199,7 +199,7 @@ void tick_input(GLFWwindow *window) {
     else if(seven) { type = 6;add_x = add_y = add_z = 0;}
 
     if(space)
-        plane.speed_y += 0.0001f;
+        plane.speed_y += 0.0005f;
     else if(w)
         plane.speed_x += 0.0001f;
     else if(a)
@@ -247,6 +247,15 @@ void tick_input(GLFWwindow *window) {
 }
 
 void tick_elements() {
+
+    // check plane aint dead 
+    if((plane.position.y < background.position.y) || plane.fuel<0)
+    {
+        cout<<"\n\nPLANE DETAILS:\nFUEL :"<<plane.fuel<<"  POINTS :"<<plane.points<<"\n";    
+        cout<<"GAME OVER\n";
+        quit(window);
+    }
+    
     ring.tick();
     plane.tick();
     checkpoint.tick();
@@ -326,7 +335,7 @@ void tick_elements() {
             checknum++;
             cout<<"\nCHECKPOINT REACHED\t"<<checknum<<"\n";
             plane.points += 10;
-            cout<<"PLANE DETAILS:\n FUEL :"<<plane.fuel<<"  POINTS :"<<plane.points<<"\n";
+            cout<<"PLANE DETAILS:\nFUEL :"<<plane.fuel<<"  POINTS :"<<plane.points<<"\n";
             sleep(10);
             float x = checkpoint.position.x,z=checkpoint.position.z;
             x -= rand()%5 + 10;
@@ -435,7 +444,7 @@ void initGL(GLFWwindow *window, int width, int height) {
     background = Background(1);
     dashboard = Dashboard(1);
     arrow = Arrow(1);
-    checkpoint = Checkpoint(-5,5);
+    checkpoint = Checkpoint(-5,15);
     compass = Compass(1);
     fuel = Fuel(1);
 
@@ -477,7 +486,7 @@ int main(int argc, char **argv) {
     type = 0;
     theta = phi = 0;
     t=1;
-    stop = 1;
+    stop = 0;
     srand(time(0));
     int width  = 600;
     int height = 600;
