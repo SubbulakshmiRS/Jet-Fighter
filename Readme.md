@@ -18,6 +18,10 @@ A : ```Tilt plane leftwards```
 
 D : ```Tilt plane rightwards```
 
+Mouse_click_LEFT : ```release missile```
+
+Mouse_click_RIGHT : ```drop bombs```
+
 1 :```Plane view```
 ```
  This is a view from the plane’s position where only a part of the world in front is
@@ -43,3 +47,7 @@ This is a view of the plane and the region in front of it from a location behind
 ```
 Camera's position and thus the view2 changes with the cursor movements intuitively.
 ```
+
+## *Elements*
+```
+The islands are rnadomly generated .Some islands have volcanoes which have a no flying zone above it . The points can be reduced when flying in no-flying zone area . Missles and Bombs can be shot at the parachutes which will increase the points of the player . Everytime a player reaches near checkpoint , the enemy cannon shoots at the plane and if hit , the player's points reduce .Smoke rings are randomly generated and if the plane passes through the ring , the player's points increase . An arrow showing the direction to the next checkpoint is shown . A compass , fuel tank display and altitude dashboard fixed to the screen is shown .```
